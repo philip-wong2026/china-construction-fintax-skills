@@ -4,16 +4,16 @@
 
 | 等级 | 名称 | 含义 | 当前覆盖 |
 |------|------|------|---------|
-| **L1** | `source-cited` | 基于法规/准则/监管文件整理，含明确文件引用 | 所有 96 个文件均满足（每个文件都有 `sources` 或 `references`） |
+| **L1** | `source-cited` | 基于法规/准则/监管文件整理，含明确文件引用 | 大多数新技能满足；旧兼容技能和 foundation 文件仍需补齐引用字段 |
 | **L2** | `practice-derived` | 基于施工企业实务经验归纳，需结合企业自身制度复核 | 操作类技能（利润表/B.S./取整/快报映射等），已验证匹配率 99.2% |
-| **L3** | `demo-verified` | 已通过 `examples/` 中的脱敏 demo 验证流程正确性 | 3 个 demo 目录已建立，但 demo 数据尚未填充，**暂未达到此等级** |
+| **L3** | `demo-verified` | 已通过 `examples/` 中的脱敏 demo 验证流程正确性 | 3 个 demo 已有 input/expected 教学样例，但尚未建立自动 output 回归，**暂未达到此等级** |
 | **L4** | `accountant-reviewed` | 已由持证 CPA / 税务师 / 企业资深财务审核并署名 | **0 / 96 文件**（全部为 `verified_by: pending`） |
 | **L5** | `production-proven` | 已在真实业务流程中持续使用并验证 | **0 / 96 文件**（项目尚未在生产环境中部署使用） |
 
 ## 当前默认状态
 
 - **所有 96 个文件**：`quality_tier: research-verified`，`verified_by: pending`
-- 这意味着：所有文件已达到 **L1（source-cited）**，部分操作类技能达到 **L2（practice-derived）**
+- 这意味着：新技能多数达到 **L1（source-cited）**，部分操作类技能达到 **L2（practice-derived）**；旧兼容技能仍需补齐引用字段
 - **不等于**：已获 CPA 审核（L4）或已在生产环境验证（L5）
 - 从 L1/L2 到 L4/L5 的差距是"可信工具"和"可信知识库"的核心差距
 

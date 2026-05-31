@@ -12,8 +12,8 @@
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| 项目合同信息 | `input/project-info.yaml` | 项目地址/合同金额/计税方式/分包信息 |
-| 收款记录 | `input/payment-receipts.csv` | 本期收款金额/日期/对应合同段 |
+| 项目合同信息 | `input/project-info.csv` | 脱敏教学样例：项目地址/合同金额/计税方式/分包信息 |
+| 期望预缴计算 | `expected/prepayment-calculation.csv` | 基于样例信息手工整理的 expected 输出 |
 
 ## 应加载的技能（按顺序）
 

@@ -12,8 +12,9 @@
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| 科目余额表 | `input/trial-balance-sample.xlsx` | 标准列位格式，含施工特有科目 |
-| 快报模板 | `input/quick-report-template.xlsx` | SASAC 快报导入模板 |
+| 科目余额表 | `input/trial-balance.csv` | 脱敏教学样例，含施工特有科目 |
+| 期望利润表 | `expected/quick-report-pnl.csv` | 基于样例余额表手工整理的 expected 输出 |
+| 期望资产负债表 | `expected/quick-report-bs.csv` | 基于样例余额表手工整理的 expected 输出，资产≈负债 |
 
 ## 应加载的技能（按顺序）
 
@@ -46,5 +47,5 @@
 ## 当前限制
 
 - **All data in this demo is synthetic, generated for pipeline validation only.**
-- 输入科目余额表为简化演示数据，总包部实际权益≈0、资产≈负债。
+- 输入科目余额表为简化演示数据，用于演示规则和测试 expected 表内等式；尚未覆盖完整 SASAC 快报模板。
 - 总包部的 12 月本月数（D 列）逻辑取决于具体结账方式，demo 暂按"本期=全年累计"处理。

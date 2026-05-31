@@ -12,8 +12,9 @@
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| 科目余额表 | `input/trial-balance-sample.xlsx` | 标准列位格式（科目代码/名称/期初方向/期初余额/本期借方/本期贷方/期末方向/期末余额），数据从 row 6 开始 |
-| 快报模板 | `input/quick-report-template.xlsx` | SASAC 快报导入模板（8 Sheet + 封面） |
+| 科目余额表 | `input/trial-balance.csv` | 脱敏教学样例（科目代码/名称/期初方向/期初余额/本期借方/本期贷方/期末方向/期末余额） |
+| 期望利润表 | `expected/quick-report-pnl.csv` | 基于样例余额表手工整理的 expected 输出 |
+| 期望资产负债表 | `expected/quick-report-bs.csv` | 基于样例余额表手工整理的 expected 输出，资产=负债+权益 |
 
 ## 应加载的技能（按顺序）
 
@@ -45,7 +46,7 @@
 ## 当前限制
 
 - **All data in this demo is synthetic, generated for pipeline validation only.**
-- 输入科目余额表为简化演示数据，部分 B/S 科目期初余额为演示而设，实际数据应满足 A=L+E。
+- 输入科目余额表为简化演示数据，用于演示规则和测试 expected 表内等式；尚未覆盖完整 SASAC 快报模板。
 - 本 demo 未覆盖：现金流量表、业务板块表、财政部快报 Sheet。
 
 ## 参考

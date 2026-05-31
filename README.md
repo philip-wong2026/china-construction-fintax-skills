@@ -37,8 +37,9 @@ china-construction-fintax-skills/
 │   └── _template-skill.md          # 技能模板
 ├── mcp/                             # MCP Server v0.3（可选便捷封装）
 ├── scripts/                         # 验证工具（validate-skills.py v0.3）
-├── notes/                           # 项目笔记和交接文档
-├── backups/                         # 备份
+├── docs/                            # 人工复核、可信度分级等文档
+├── examples/                        # 脱敏示例数据和期望输出
+├── tests/                           # 结构、MCP 解析、demo 契约测试
 ├── LICENSE                          # AGPL-3.0
 └── README.md                        # 本文件
 ```
@@ -53,7 +54,7 @@ china-construction-fintax-skills/
 
 ```bash
 cd china-construction-fintax-skills/mcp
-pip install .
+python3 -m pip install -e .
 ```
 
 在 `claude_desktop_config.json` 中添加：
@@ -66,18 +67,21 @@ pip install .
 }
 ```
 
+如果 `ccfts-mcp` 不在 shell 的 `PATH` 中，请使用 `python3 -m pip show -f ccfts-mcp` 找到脚本安装位置，并在 MCP 客户端配置中填写完整路径。
+
 ## 验证状态
 
 - **结构验证**：`python3 scripts/validate-skills.py` → 96 files, 0 issues
-- **MCP 解析**：多行 YAML list、跨引用、slug 别名均通过测试
-- **数据验证**：操作技能基于施工企业 Q3/Q4 2025 及 2026M05 实际财务数据验证，快报匹配率 99.2%
+- **MCP 解析**：多行 YAML list、跨引用、slug 别名均通过 helper 测试；完整客户端联调见 `mcp/SMOKE_TEST.md`
+- **示例数据**：`examples/` 提供脱敏教学样例和 expected 输出，用于演示流程，不代表真实企业报表
+- **历史数据验证**：部分操作技能基于施工企业 Q3/Q4 2025 及 2026M05 实际财务数据验证，快报匹配率 99.2%
 - **脱敏**：0 个真实企业/项目/地名残留
 
 ## 已知限制
 
-- MCP 服务器需用户自行 `pip install .`，当前开发环境未预装 `mcp` 包
+- MCP 服务器需用户自行安装；本地 helper/parser 已验证，MCP 客户端联调需按 `mcp/SMOKE_TEST.md` 执行
 - 全部 96 个文件尚未经持证 CPA 审核（`verified_by: pending`）
-- `tests/` 目录暂无内容级自动化测试
+- `tests/` 目前以结构、解析和 demo 契约测试为主，尚未覆盖完整会计/税务规则自动验算
 
 ## 质量等级
 
