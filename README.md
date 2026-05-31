@@ -15,6 +15,8 @@
 
 已经知道自己要处理哪个财税场景？看 [START_HERE.md](START_HERE.md)，里面按 6 个真实财税场景列出了推荐加载顺序、输入材料、输出结果和人工复核点。
 
+只会使用豆包、马维斯等桌面 AI 助手？直接看 [agent-packs/](agent-packs/)，里面有可上传、可复制提示词的场景包。开发者或项目型 agent 用户可看 [docs/integrations/](docs/integrations/)。
+
 ## 适用边界
 
 **适合：**
@@ -54,8 +56,9 @@ china-construction-fintax-skills/
 │   ├── china-construction/          # 旧文件（7 个，保持向后兼容）
 │   └── _template-skill.md          # 技能模板
 ├── mcp/                             # MCP Server v0.3（可选便捷封装）
+├── agent-packs/                     # 豆包、马维斯、Trae Solo 等场景包
 ├── scripts/                         # 验证工具（validate-skills.py v0.3）
-├── docs/                            # 新手说明、人工复核、可信度分级等文档
+├── docs/                            # 新手说明、集成方式、人工复核、可信度分级等文档
 ├── examples/                        # 脱敏示例数据和期望输出
 ├── tests/                           # 结构、MCP 解析、demo 契约测试
 ├── LICENSE                          # AGPL-3.0
@@ -99,6 +102,16 @@ python3 -m pip install -e .
 ```
 
 如果 `ccfts-mcp` 不在 shell 的 `PATH` 中，请使用 `python3 -m pip show -f ccfts-mcp` 找到脚本安装位置，并在 MCP 客户端配置中填写完整路径。
+
+### 方式三：桌面 AI 场景包（豆包 / 马维斯）
+
+如果用户不熟悉 GitHub、MCP 或项目目录，使用 [agent-packs/](agent-packs/)：
+
+- 豆包用户：上传 [agent-packs/doubao/flash-report.md](agent-packs/doubao/flash-report.md) 或 [agent-packs/doubao/vat-prepayment.md](agent-packs/doubao/vat-prepayment.md)
+- 马维斯用户：读取或上传 [agent-packs/marvis/desktop-finance-review.md](agent-packs/marvis/desktop-finance-review.md)
+- Trae Solo 用户：参考 [agent-packs/trae-solo/README.md](agent-packs/trae-solo/README.md)
+
+更多平台接入方式见 [docs/integrations/](docs/integrations/)。
 
 ## 验证状态
 

@@ -112,6 +112,27 @@ python3 -m pip install -e .
 
 如果你只是新手试用，不建议一开始就走 MCP。先用“直接读取 skill 文件”的方式理解价值，再考虑 MCP。
 
+### 方式四：使用现成场景包
+
+如果你只会用豆包、马维斯这类桌面 AI 助手，最简单的方式不是打开 96 个 skill 文件，而是使用 `agent-packs/`。
+
+场景包是把多个相关 skill 的使用方法压缩成一个更容易上传、复制和执行的 Markdown 文件。
+
+例如：
+
+- 豆包检查快报：`agent-packs/doubao/flash-report.md`
+- 豆包检查 VAT 跨区域预缴：`agent-packs/doubao/vat-prepayment.md`
+- 马维斯读取本地文件夹检查财税资料：`agent-packs/marvis/desktop-finance-review.md`
+- Trae Solo 项目型接入：`agent-packs/trae-solo/README.md`
+
+使用方式：
+
+1. 打开你的 AI 工具
+2. 上传一个场景包
+3. 上传脱敏业务数据
+4. 复制场景包里的提示词
+5. 检查输出里的人工复核清单
+
 ## 跟现在的 AI workspace 有什么升级
 
 没有 skills 的 AI workspace，常见问题是：
@@ -131,6 +152,19 @@ python3 -m pip install -e .
 - **可协作**：别人可以围绕某个 skill 提 issue、提交修正、补验证样本
 
 简单说，它把 AI workspace 从“资料仓库”升级成“带专业操作说明的 AI 工作系统”。
+
+## 哪些 AI 工具能用
+
+| 工具 | 能不能用 | 推荐方式 |
+|---|---|---|
+| Codex / Claude Code | 能 | 直接读取 repo 或配置 MCP |
+| Trae Solo | 能 | 打开 repo，必要时配置 MCP |
+| 豆包 Desktop / Web | 能，但用简化方式 | 上传 `agent-packs/doubao/` 场景包 |
+| 腾讯马维斯 | 能，但取决于版本能力 | 读取本地文件夹或上传 `agent-packs/marvis/` |
+| 手机端 AI | 只能轻量用 | 复制单个场景包和提示词 |
+| 腾讯云 Agent / CloudBase | 能，但需要工程化 | 上传为知识库，或未来接 MCP SSE |
+
+详细接入说明见 [integrations/README.md](integrations/README.md)。
 
 ## 一个完整使用例子
 
@@ -231,4 +265,3 @@ MCP 只是高级接入方式。直接读取 Markdown 文件就能使用核心价
 我的业务场景是：[在这里填写，例如：项目部月度快报 / SPV 快报 / VAT 跨区域预缴 / CIT 预缴 / 质保金处理]
 我提供的数据是：[在这里说明你会提供什么文件或表格]
 ```
-

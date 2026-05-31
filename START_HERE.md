@@ -4,6 +4,8 @@
 
 如果你还不清楚“AI skill 是什么、装到哪里、跟 AI workspace 有什么关系”，请先读 [docs/beginner-guide.md](docs/beginner-guide.md)。
 
+如果你只会用豆包、马维斯这类桌面 AI 助手，请优先使用 [agent-packs/](agent-packs/) 中的场景包，而不是直接加载全部 96 个 skill。
+
 ## 这是什么
 
 96 个中文 Markdown 技能文件，覆盖中国施工企业（铁路/公路/市政/房建/水利/港口/矿山/机电安装）的财务会计与税务全链条。AI agent 直接读取 Markdown 即可使用；另有可选的 MCP 服务器封装。
