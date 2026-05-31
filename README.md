@@ -1,5 +1,10 @@
 # CCFTS — China Construction Enterprise Finance & Tax Skills
 
+[![Skills](https://img.shields.io/badge/skills-96-blue)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+[![Validation](https://img.shields.io/badge/validation-100%25-brightgreen)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-orange)](LICENSE)
+[![Status](https://img.shields.io/badge/status-Internal%20Preview%20%2F%20Alpha-lightgrey)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+
 ## 中国施工企业财税技能包
 
 为 AI 代理（Claude、Codex、DeepSeek 及任何支持 MCP 的客户端）提供结构化的中国施工企业财务会计与税务知识。从科目余额表到财务快报，从增值税简易计税到完工百分比法——把中国施工企业财税专家的经验变成可复用的 AI 技能文件。
