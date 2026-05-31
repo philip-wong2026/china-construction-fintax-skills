@@ -1,50 +1,100 @@
-# Doubao Integration
+# 豆包怎么用 CCFTS
 
-## Compatibility
+这页写给只会用豆包的人。
 
-Doubao users usually need a simpler path than GitHub, MCP, or local agent configuration. The practical CCFTS mode for Doubao is:
+你不需要懂 GitHub，也不需要安装东西。你只要会打开豆包、上传文件、复制提示词，就能试用。
 
-> Upload or paste a small scenario pack, then upload anonymized business data, then ask Doubao to follow the CCFTS checklist.
+## CCFTS 在豆包里能做什么
 
-Use `agent-packs/doubao/` instead of asking non-technical users to browse all 96 skill files.
+它可以帮你让豆包更像一个“施工企业财税助理”：
 
-## Recommended Setup
+- 看科目余额表，帮你整理快报映射思路
+- 判断主体大概是项目部、SPV 项目公司、子公司还是集团
+- 检查资产负债表是否平衡
+- 提醒哪些地方需要期末调整
+- 判断 VAT 跨区域预缴的大致方向
+- 输出给领导看的摘要
+- 输出给财务复核人的检查清单
 
-1. Open Doubao Desktop or Web.
-2. Start a new chat.
-3. Upload one scenario pack from `agent-packs/doubao/`.
-4. Upload anonymized source data, such as a trial balance or project information table.
-5. Paste the prompt included in the scenario pack.
-6. Review the output using [docs/manual-review-template.md](../manual-review-template.md).
+它不能替你最终拍板，也不能替代税务师、CPA 或单位制度。
 
-## Good Use Cases
+## 最简单用法
 
-- Quick finance/tax checklist generation
-- Reading a trial balance or project information table
-- Drafting flash-report mapping logic
-- VAT prepayment checks
-- Leadership summary drafting
+### 第一步：选一个场景包
 
-## Not Recommended
+从这里选：
 
-- Uploading real sensitive enterprise data to a personal account
-- Loading all 96 skills at once
-- Treating Doubao output as final tax, audit, or reporting advice
-- Production workflows without enterprise data approval
+- [施工企业快报检查](../../agent-packs/doubao/flash-report.md)
+- [VAT 跨区域预缴检查](../../agent-packs/doubao/vat-prepayment.md)
 
-## Data Safety Rule
+### 第二步：打开豆包
 
-For state-owned enterprise or central enterprise users, do not upload original sensitive data unless your organization explicitly allows it.
+打开豆包桌面端或网页端，新建一个聊天。
 
-Before uploading, anonymize:
+### 第三步：上传场景包
 
-- enterprise names
-- project names
-- tax IDs
-- contract numbers
-- bank accounts
-- personal information
-- exact commercially sensitive amounts, if needed
+把刚才选的 `.md` 文件上传给豆包。
 
-When possible, use scaled or sample data.
+如果豆包不方便上传 Markdown 文件，也可以打开这个文件，把里面内容复制粘贴给豆包。
+
+### 第四步：上传脱敏业务资料
+
+可以上传：
+
+- 脱敏科目余额表
+- 脱敏项目合同关键信息
+- 脱敏开票和收款信息
+- 脱敏截图
+- 脱敏 CSV 或 Excel
+
+### 第五步：复制提示词
+
+场景包里有一段“复制给豆包的提示词”。直接复制过去。
+
+## 重要提醒：不要上传敏感原始数据
+
+央企、国企、施工企业的数据通常很敏感。个人版 AI 工具不一定适合处理真实资料。
+
+上传前请先脱敏：
+
+- 企业名称改成 A 公司
+- 项目名称改成 X 项目
+- 税号删掉
+- 合同编号删掉
+- 银行账号删掉
+- 人名删掉
+- 金额可以按比例缩放
+
+如果单位没有明确允许，不要上传真实原始资料。
+
+## 豆包输出后怎么看
+
+不要只看结论。重点看最后的：
+
+- 缺失信息
+- 风险点
+- 人工复核清单
+
+你可以继续追问：
+
+```text
+哪些地方你不确定？请单独列出来。
+哪些结论必须由财务人员人工复核？
+如果我要给领导汇报，请只保留关键风险和下一步动作。
+```
+
+## 适合豆包的场景
+
+- 快速理解一张表的问题
+- 出一个检查清单
+- 起草财务分析摘要
+- 发现可能的税务风险点
+- 帮新人理解施工企业财税处理逻辑
+
+## 不适合豆包的场景
+
+- 直接生成正式报表并报送
+- 直接生成正式纳税申报结论
+- 处理未经批准的真实敏感数据
+- 替代 CPA、税务师、审计人员或单位制度
 

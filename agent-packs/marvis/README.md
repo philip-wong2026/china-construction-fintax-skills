@@ -1,16 +1,20 @@
-# Marvis Agent Packs
+# 马维斯场景包
 
-These packs are for Tencent Marvis users who want CCFTS to work as a local document-based skill pack.
+这个目录给腾讯马维斯用户使用。
 
-## How To Use
+如果马维斯能读取本地文件夹，就让它读取这个项目。
+如果它不能读取整个文件夹，就把场景包复制给它。
 
-1. Put this repository in a local folder.
-2. Ask Marvis to read this folder or upload one scenario pack.
-3. Provide anonymized business files.
-4. Ask Marvis to cite which pack/rules it used.
-5. Review every output manually.
+## 怎么用
 
-## Packs
+1. 打开马维斯。
+2. 让马维斯读取 [本地施工企业财税文件检查](desktop-finance-review.md)。
+3. 上传或选择脱敏后的业务文件。
+4. 复制场景包里的提示词。
+5. 要求马维斯输出“结果草稿 + 人工复核清单”。
 
-- [Desktop finance review](desktop-finance-review.md)
+## 注意
+
+马维斯不同版本能力可能不同。
+如果读不了整个项目，就只读一个场景包。
 

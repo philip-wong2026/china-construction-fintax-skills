@@ -1,76 +1,81 @@
-# Tencent Cloud Agent / CloudBase Integration
+# 腾讯云 Agent / CloudBase 怎么接 CCFTS
 
-## Compatibility
+这页写给企业信息化、数字化、财务共享中心或内部 AI 平台人员。
 
-Tencent Cloud Agent / CloudBase-style platforms are a stronger enterprise fit than consumer chat apps because they can use knowledge bases, workflows, plugins, and deployment channels.
+普通财务人员不建议从这里开始。普通用户先用 [agent-packs/](../../agent-packs/)。
 
-CCFTS can be integrated in two stages:
+## 能不能接
 
-1. Knowledge-base mode: upload Markdown skills as a domain knowledge base.
-2. Tool mode: expose CCFTS as an MCP SSE or HTTP service for structured search and retrieval.
+能接，但这不是“上传一个文件就完事”的事情。
 
-The current repository ships a local stdio MCP server under `mcp/`. For cloud platforms that require SSE/HTTP MCP, an adapter still needs to be built.
+腾讯云 Agent / CloudBase 这类平台更适合把 CCFTS 做成企业内部知识库或内部财税助手。
 
-## Stage 1: Knowledge Base
+## 推荐分两步做
 
-Recommended first enterprise deployment:
+### 第一步：先做知识库
 
-1. Create a private knowledge base.
-2. Upload:
-   - `README.md`
-   - `START_HERE.md`
-   - `docs/beginner-guide.md`
-   - selected `skills/` files
-   - selected `agent-packs/` files
-3. Configure the Agent role instruction:
+先不要急着开发工具。
 
-```text
-You are a China construction enterprise finance and tax assistant.
-Use CCFTS only as a reference and checklist source.
-Ask for missing business facts before giving a conclusion.
-Always separate confirmed facts, assumptions, risk points, and manual review items.
-Never present output as final compliance advice.
-```
+可以先把这些文件上传到企业知识库：
 
-4. Add example questions for first-time users.
-5. Test with anonymized validation cases before internal rollout.
+- `README.md`
+- `START_HERE.md`
+- `docs/beginner-guide.md`
+- `docs/manual-review-template.md`
+- `agent-packs/`
+- 按场景选出的 `skills/` 文件
 
-## Stage 2: MCP SSE / HTTP Adapter
-
-Build a cloud adapter only after knowledge-base mode proves useful.
-
-Target capabilities:
-
-- list available skills
-- search skills by scenario
-- read a skill by slug
-- return recommended skill bundles
-- return manual review checklist by task type
-
-Possible future directory:
+然后给智能体设置一段角色说明：
 
 ```text
-mcp-sse/
-  server.py
-  deployment.md
-  tests/
+你是中国施工企业财税辅助助手。
+你只能把 CCFTS 当作参考资料和检查清单使用。
+遇到缺失资料时，必须先提问。
+输出必须区分：已确认事实、推断结论、缺失信息、风险点、人工复核清单。
+不得把输出写成最终合规意见。
 ```
 
-## Enterprise Controls
+### 第二步：再考虑工具化
 
-Before production use, define:
+如果知识库试用有效，再考虑把 CCFTS 做成工具服务。
 
-- data classification rules
-- upload restrictions
-- audit logs
-- user permission scope
-- professional review workflow
-- retention and deletion policy
-- validation cases and acceptance thresholds
+可能要开发：
 
-## Limits
+- 查询有哪些 skill
+- 按场景搜索 skill
+- 按 slug 读取某个 skill
+- 返回推荐 skill 组合
+- 返回人工复核清单
 
-- Cloud deployment is an engineering project, not just a documentation task.
-- CCFTS is still public alpha and CPA review is pending.
-- A knowledge-base agent can retrieve rules, but it still needs workflow design and evaluation before enterprise use.
+当前项目里的 `mcp/` 是本地 MCP，适合本机客户端。
+如果要接云端平台，后续可能需要再做一个 SSE / HTTP 版本。
+
+## 企业上线前必须考虑
+
+- 哪些数据可以上传
+- 哪些数据禁止上传
+- 用户权限怎么分
+- 操作日志怎么留
+- 输出谁来复核
+- 数据保存多久
+- 错误答案谁负责
+- 是否通过财务、税务、审计、法务确认
+
+## 最适合的企业用法
+
+不是让 AI 直接替代财务人员，而是做成：
+
+- 新人学习助手
+- 财税制度问答助手
+- 快报检查助手
+- VAT / CIT 风险检查助手
+- 项目资料复核清单生成助手
+- 领导汇报摘要生成助手
+
+## 不建议的用法
+
+- 直接让 AI 出正式申报结论
+- 直接让 AI 出审计意见
+- 没有脱敏和权限控制就上传真实资料
+- 没有人工复核就用于正式报送
 

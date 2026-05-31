@@ -1,41 +1,69 @@
-# Tencent Marvis Integration
+# 马维斯怎么用 CCFTS
 
-## Compatibility
+这页写给会用腾讯马维斯的人。
 
-Tencent Marvis is positioned as an operating-system-level assistant that can understand files and help users operate their computer. CCFTS can be used with Marvis as a local document skill pack if Marvis can read the relevant folder or uploaded Markdown files.
+马维斯如果能读取你的本地文件夹或你上传的文件，就可以把 CCFTS 当成一套“本地财税说明书”来用。
 
-At the current public-alpha stage, do not assume Marvis can directly run the local `ccfts-mcp` stdio server unless its product documentation or client UI explicitly supports that integration.
+## 最简单用法
 
-## Recommended Setup
+1. 把 CCFTS 项目放在电脑本地。
+2. 打开马维斯。
+3. 让马维斯读取这个文件：
+   - [马维斯：本地财税文件检查](../../agent-packs/marvis/desktop-finance-review.md)
+4. 再上传或选择你的脱敏业务文件。
+5. 让马维斯按场景包里的提示词输出结果。
 
-1. Keep this repository in a local folder.
-2. Ask Marvis to read:
-   - `docs/beginner-guide.md`
-   - `START_HERE.md`
-   - one task-specific file under `agent-packs/marvis/`
-3. Provide anonymized Excel, Word, PDF, screenshot, or CSV inputs.
-4. Ask Marvis to output both:
-   - business result draft
-   - manual review checklist
+## 可以让马维斯做什么
 
-Example prompt:
+- 读取一份脱敏 Excel 或截图
+- 帮你判断属于什么财税场景
+- 列出需要补充哪些资料
+- 整理风险点
+- 生成给领导看的摘要
+- 生成给财务人员看的复核清单
+
+## 可以这样问
 
 ```text
-请读取这个文件夹里的 CCFTS 马维斯场景包，并按其中规则帮我检查这份脱敏科目余额表。
-请先说明你读取了哪些规则，再输出映射思路、异常点和人工复核清单。
-不要把结果作为最终合规意见。
+请读取 CCFTS 的马维斯场景包，并按里面的规则帮我检查这份脱敏科目余额表。
+
+请先说明你读取了哪些规则，再输出：
+1. 当前业务场景判断
+2. 已确认事实
+3. 不确定事项
+4. 风险点
+5. 人工复核清单
+
+不要把结果当成最终合规意见。
 ```
 
-## Good Use Cases
+## 如果马维斯读不了整个文件夹
 
-- Local file-based review
-- Desktop document summarization
-- Screenshot-based checklist generation
-- Simple finance/tax risk triage
+那就不要硬让它读 96 个 skill。
 
-## Limits
+改用简单办法：
 
-- Product capability may vary by Marvis version and platform.
-- If Marvis cannot reliably read a whole folder, upload or paste the specific scenario pack instead.
-- Use anonymized data unless the enterprise has approved the tool and data path.
+1. 打开 [agent-packs/marvis/desktop-finance-review.md](../../agent-packs/marvis/desktop-finance-review.md)
+2. 把全文复制给马维斯
+3. 再上传脱敏业务文件
+
+## 数据安全提醒
+
+央企、国企资料不要随便交给个人版 AI 工具。
+
+上传前至少做到：
+
+- 去掉企业名
+- 去掉项目名
+- 去掉合同编号
+- 去掉税号
+- 去掉银行账号
+- 去掉人名
+- 金额必要时做比例缩放
+
+## 注意
+
+马维斯不同版本的能力可能不一样。有些版本能读本地文件夹，有些版本可能只能读你上传的文件。
+
+所以这个接入方式要按实际软件能力测试，不要假设它一定能自动调用 CCFTS 的 MCP。
 

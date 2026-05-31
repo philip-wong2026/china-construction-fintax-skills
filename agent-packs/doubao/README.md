@@ -1,21 +1,35 @@
-# Doubao Agent Packs
+# 豆包场景包
 
-These files are for Doubao Desktop/Web users.
+这个目录给豆包用户使用。
 
-## How To Use
+不需要安装。
+不需要懂 GitHub。
+不需要懂 MCP。
 
-1. Open Doubao.
-2. Upload one pack file from this folder.
-3. Upload anonymized business data.
-4. Copy the prompt inside the pack file.
-5. Ask Doubao to output both the business draft and manual review checklist.
+## 怎么用
 
-## Packs
+1. 打开豆包桌面端或网页端。
+2. 选下面一个场景包。
+3. 上传场景包，或者复制场景包全文给豆包。
+4. 上传脱敏业务资料。
+5. 复制场景包里的提示词。
+6. 让豆包输出结果和人工复核清单。
+
+## 场景包
 
 - [施工企业快报检查](flash-report.md)
 - [VAT 跨区域预缴检查](vat-prepayment.md)
 
-## Data Warning
+## 先提醒一句
 
-Do not upload original sensitive central-enterprise or state-owned-enterprise data to a personal AI account unless your organization explicitly allows it.
+不要上传真实敏感资料。
+
+至少要去掉：
+
+- 企业名称
+- 项目名称
+- 税号
+- 合同编号
+- 银行账号
+- 人名
 

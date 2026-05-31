@@ -1,16 +1,49 @@
-# Agent Packs
+# 场景包：给普通 AI 用户直接用
 
-Agent packs are simplified, task-specific entry files for AI products that do not understand the full CCFTS repository structure.
+这个目录是给不会 GitHub、不会 MCP、不会项目配置的人用的。
 
-Use them when the user is not a developer and does not want to configure MCP.
+一句话：
 
-## Available Packs
+> 场景包就是“复制给豆包、马维斯看的简化版说明书”。
 
-- `doubao/`: copy-and-upload packs for Doubao Desktop/Web users
-- `marvis/`: local-file packs for Tencent Marvis users
-- `trae-solo/`: project/MCP setup notes for Trae Solo users
+## 为什么要有场景包
 
-## Rule
+完整 CCFTS 有 96 个 skill 文件。普通用户不可能知道该读哪个。
 
-Do not ask non-technical users to load all 96 skills. Give them one scenario pack, one anonymized input file, and one copy-ready prompt.
+所以这里把常见场景整理成一个文件：
+
+- 你该上传什么
+- 你该复制哪段提示词
+- AI 应该输出什么
+- 哪些地方必须人工复核
+
+## 怎么用
+
+1. 打开你的 AI 工具，比如豆包或马维斯。
+2. 选一个场景包。
+3. 上传这个场景包，或者把内容复制给 AI。
+4. 上传脱敏业务资料。
+5. 复制场景包里的提示词。
+6. 看 AI 输出，重点看“人工复核清单”。
+
+## 已有场景包
+
+### 豆包
+
+- [施工企业快报检查](doubao/flash-report.md)
+- [VAT 跨区域预缴检查](doubao/vat-prepayment.md)
+
+### 马维斯
+
+- [本地施工企业财税文件检查](marvis/desktop-finance-review.md)
+
+### Trae Solo
+
+- [Trae Solo 使用入口](trae-solo/README.md)
+
+## 重要提醒
+
+不要把真实敏感数据直接上传到个人版 AI。
+
+先脱敏，再使用。
 
