@@ -11,7 +11,9 @@
 
 **当前阶段**：**Public Alpha** — 96 个技能文件，6 个职能领域全覆盖。面向懂施工企业财税业务的 AI agent 使用者，用于辅助检索、推理、工作流组织和检查，不作为最终合规意见。全部 `research-verified`（待 CPA 审核）。
 
-不知道从哪里开始？先看 [START_HERE.md](START_HERE.md)，里面按 6 个真实财税场景列出了推荐加载顺序、输入材料、输出结果和人工复核点。
+第一次接触 AI skills？先看 [新手说明：这个项目是什么，怎么用](docs/beginner-guide.md)。
+
+已经知道自己要处理哪个财税场景？看 [START_HERE.md](START_HERE.md)，里面按 6 个真实财税场景列出了推荐加载顺序、输入材料、输出结果和人工复核点。
 
 ## 适用边界
 
@@ -53,7 +55,7 @@ china-construction-fintax-skills/
 │   └── _template-skill.md          # 技能模板
 ├── mcp/                             # MCP Server v0.3（可选便捷封装）
 ├── scripts/                         # 验证工具（validate-skills.py v0.3）
-├── docs/                            # 人工复核、可信度分级等文档
+├── docs/                            # 新手说明、人工复核、可信度分级等文档
 ├── examples/                        # 脱敏示例数据和期望输出
 ├── tests/                           # 结构、MCP 解析、demo 契约测试
 ├── LICENSE                          # AGPL-3.0
@@ -72,6 +74,8 @@ python3 tests/test_demo_contracts.py
 ```
 
 然后打开 [START_HERE.md](START_HERE.md)，按你的场景选择对应技能 slug。
+
+如果你还不清楚“skills 装到哪里、跟普通提示词有什么区别、跟 AI workspace 有什么关系”，先读 [docs/beginner-guide.md](docs/beginner-guide.md)。
 
 ### 方式一：直接引用（任何 AI 工具）
 
