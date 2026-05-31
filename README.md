@@ -1,162 +1,158 @@
-# CCFTS — China Construction Enterprise Finance & Tax Skills
+# CCFTS 中国施工企业财税 AI 技能包
 
 [![Skills](https://img.shields.io/badge/skills-96-blue)](https://github.com/philip-wong2026/china-construction-fintax-skills)
 [![Validation](https://github.com/philip-wong2026/china-construction-fintax-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/philip-wong2026/china-construction-fintax-skills/actions/workflows/validate.yml)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-orange)](LICENSE)
-[![Status](https://img.shields.io/badge/status-Public%20Alpha-lightgrey)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+[![Status](https://img.shields.io/badge/status-Public%20Alpha-lightgrey)](docs/release-v0.1.0-public-alpha.md)
 
-## 中国施工企业财税技能包
+让 AI 先看懂施工企业的项目、合同、成本、税务和报表口径，再帮你做资料检查、风险提示和分析草稿。
 
-为 AI 代理（Claude、Codex、DeepSeek 及任何支持 MCP 的客户端）提供结构化的中国施工企业财务会计与税务知识。从科目余额表到财务快报，从增值税简易计税到完工百分比法——把中国施工企业财税专家的经验变成可复用的 AI 技能文件。
+![CCFTS 解决的问题](assets/ccfts-overview.svg)
 
-**当前阶段**：**Public Alpha** — 96 个技能文件，6 个职能领域全覆盖。面向懂施工企业财税业务的 AI agent 使用者，用于辅助检索、推理、工作流组织和检查，不作为最终合规意见。全部 `research-verified`（待 CPA 审核）。
+## 先用一句话说清楚
 
-第一次接触 AI skills？先看 [新手说明：这个项目是什么，怎么用](docs/beginner-guide.md)。
+CCFTS 不是财务软件，不是报税软件，也不是一个新的聊天机器人。
 
-已经知道自己要处理哪个财税场景？看 [START_HERE.md](START_HERE.md)，里面按 6 个真实财税场景列出了推荐加载顺序、输入材料、输出结果和人工复核点。
+它是一套“给 AI 看的中国施工企业财税工作说明书”。你把它交给 AI 后，AI 在处理施工企业快报、增值税跨区域预缴、成本分析、清收清欠、质保金、竣工结算等问题时，就不再只靠通用知识临场发挥，而是先按施工企业的资料清单、业务口径和复核要求来工作。
 
-只会使用豆包、马维斯等桌面 AI 助手？直接看 [agent-packs/](agent-packs/)，里面有可上传、可复制提示词的场景包。开发者或项目型 agent 用户可看 [docs/integrations/](docs/integrations/)。
+## 为什么建筑企业需要它
 
-## 适用边界
+建筑企业不缺资料，真正难的是口径复杂。
 
-**适合：**
+同一个项目，项目经理看进度、安全、质量和现金流；商务人员看合同、签证、变更和结算；财务人员看收入、成本、发票、税费和报表；公司领导看利润、两金、债权债务和经营指标。
 
-- 施工企业财务、税务、报表、经营分析人员用 AI agent 做资料检索、规则检查和工作流组织
-- 构建中文财税垂直 AI agent、MCP 工具或 domain skills 的开发者
-- 学习中国施工企业财税场景下的技能文件组织方式和验证方法
+如果 AI 只会写材料，不懂这些口径，它就容易把复杂问题说得很漂亮，但结论不敢用。
 
-**不适合：**
+CCFTS 想解决的就是这个问题：把施工企业财税和管理经验整理成 AI 能读取、能复用、能被人工复核的技能文件。
 
-- 直接替代 CPA、税务师、律师或企业正式内控制度
-- 未经人工复核就用于正式纳税申报、审计签字、监管报送或重大经营决策
-- 作为通用中国会计准则知识库使用；本项目当前聚焦施工企业场景
+## 它能帮你做什么
 
-## 设计理念
+| 场景 | AI 可以先帮你做什么 | 必须人工复核什么 |
+| --- | --- | --- |
+| 财务快报 | 判断项目部、项目公司、子公司等主体口径，梳理科目到报表项目的映射 | 主体类型、报表口径、重大差异 |
+| 增值税跨区域预缴 | 提示项目所在地、机构所在地、计税方式、分包扣除等资料缺口 | 地方税务机关口径、合同事实、申报结果 |
+| 清收清欠 | 区分已计量、已开票、已回款、未确权、账龄等状态 | 责任部门、催收策略、坏账判断 |
+| 质保金和竣工结算 | 梳理扣留比例、缺陷责任期、审减、红字发票、应收转换等检查点 | 合同条款、结算确认、收入调整 |
+| 项目经营分析 | 梳理收入、成本、现金流、垫资、两金和亏损风险 | 真实成本、预算口径、管理责任 |
 
-- **Markdown 优先**：技能文件即纯 .md，无需任何工具即可被 AI 代理直接读取
-- **平台无关**：同一套技能文件，Claude 用、Codex 用、未来的 DeepSeek Agent 也用
-- **深度优先**：从一个垂直领域（中国施工企业）做深做实，再逐步扩展
-- **Base + SLOT 架构**：`_base/` 文件定义通用工作流和占位符，层级覆盖文件填充具体参数
-- **MCP 可选**：MCP 服务器是便捷封装层，技能文件本身可直接使用
-- **OpenAccountants 兼容**：采用相同的 frontmatter schema 和质量等级标准
-- **开源免费**：AGPL-3.0，永远免费开放
+## 它不能替你做什么
 
-## 项目结构
+- 不能替代注册会计师、税务师、律师、审计人员或企业正式审批。
+- 不能保证 AI 输出可以直接用于纳税申报、审计签字、监管报送或重大经营决策。
+- 不能自动知道你的企业、项目、岗位、期间和本地口径。
+- 不能处理未脱敏敏感资料在公开 AI 工具中的合规风险。
 
+## 第一次怎么用
+
+![CCFTS 第一次使用步骤](assets/ccfts-how-to-use.svg)
+
+最简单的路径：
+
+1. 打开 [10 分钟上手](docs/quick-start-10min.md)
+2. 填一份 [项目背景包模板](docs/context-pack-template.md)
+3. 选择一个 [脱敏 demo](examples/README.md)
+4. 把场景包、背景包和脱敏资料交给 AI
+5. 检查 AI 输出里的缺失资料、风险提示和人工复核清单
+
+如果你只会用豆包、马维斯这类桌面 AI 助手，不用先研究 GitHub 和 MCP，直接看 [agent-packs/](agent-packs/) 里的场景包。
+
+## 为什么还要填背景包
+
+![CCFTS 背景包说明](assets/ccfts-context-pack.svg)
+
+很多人会误解：装了 skill，AI 就会自动懂自己的工作。
+
+实际上不会。
+
+CCFTS 只告诉 AI “施工企业财税事项通常怎么处理”。它不知道你是谁、你处理的是哪个项目、主体是项目部还是项目公司、期间是几月、资料是否脱敏、哪些结论只能内部测算不能正式报送。
+
+所以使用时要同时提供：
+
+- **CCFTS skill 或场景包**：告诉 AI 行业方法。
+- **项目背景包**：告诉 AI 你的具体工作背景。
+
+这也是本项目最重要的使用原则。
+
+## 三个脱敏演示
+
+| Demo | 适合谁 | 看什么 |
+| --- | --- | --- |
+| [项目部/总包部快报](examples/demo-project-unit-flash-report/) | 项目财务、总包部财务、报表人员 | 非法人项目部如何检查快报口径 |
+| [项目公司 SPV 快报](examples/demo-spv-flash-report/) | 项目公司、投资管理类主体财务 | 独立法人项目公司和项目部口径有什么不同 |
+| [增值税跨区域预缴](examples/demo-vat-prepayment/) | 税务岗、项目财务、共享中心税务人员 | 一般计税、简易计税和跨区域预缴怎么检查 |
+
+这些 demo 都是脱敏教学样例，不代表真实企业报表，也不构成正式财税意见。
+
+## 支持哪些 AI 工具
+
+| 工具 | 推荐用法 |
+| --- | --- |
+| 豆包 Desktop / Web | 上传 `agent-packs/doubao/` 里的场景包，再上传脱敏资料 |
+| 腾讯马维斯 | 读取本地文件夹或上传 `agent-packs/marvis/` 场景包 |
+| Trae Solo | 打开本仓库，按 `agent-packs/trae-solo/README.md` 使用 |
+| Codex / Claude Code / Cursor | 直接读取仓库，或配置可选 MCP |
+| Claude Desktop | 可直接上传文件，也可配置 MCP |
+| 手机端 AI | 只适合复制单个场景包和少量脱敏资料试用 |
+
+更详细的接入方式见 [docs/integrations/](docs/integrations/)。
+
+## 项目里有什么
+
+```text
+skills/        96 个施工企业财税 skill，核心内容
+agent-packs/   给豆包、马维斯、Trae Solo 等普通用户的场景包
+docs/          新手说明、背景包、人工复核、接入说明
+examples/      3 个脱敏 demo
+mcp/           可选 MCP Server，给高级用户和开发者使用
+tests/         结构检查和 demo 检查
 ```
-china-construction-fintax-skills/
-├── skills/                          # 技能文件（核心内容，96 个 .md）
-│   ├── foundation/                  # 跨领域工作流基础（2 文件）
-│   ├── financial-reporting/         # 财务报表域（29 文件，fr）
-│   ├── accounting/                  # 会计核算域（14 文件，acct）
-│   ├── tax/                         # 税务申报域（12 文件，tax）
-│   ├── analysis/                    # 经济活动分析域（6 文件，anlys）
-│   ├── management/                  # 管理办法域（10 文件，mgmt）
-│   ├── intelligence/                # 法规知识库（16 文件，intel）
-│   ├── china-construction/          # 旧文件（7 个，保持向后兼容）
-│   └── _template-skill.md          # 技能模板
-├── mcp/                             # MCP Server v0.3（可选便捷封装）
-├── agent-packs/                     # 豆包、马维斯、Trae Solo 等场景包
-├── scripts/                         # 验证工具（validate-skills.py v0.3）
-├── docs/                            # 新手说明、集成方式、人工复核、可信度分级等文档
-├── examples/                        # 脱敏示例数据和期望输出
-├── tests/                           # 结构、MCP 解析、demo 契约测试
-├── LICENSE                          # AGPL-3.0
-└── README.md                        # 本文件
-```
 
-## 快速开始
+## 当前阶段
 
-### 5 分钟试用
+当前版本定位：`v0.1.0-public-alpha` 公开试验版。
+
+当前状态：
+
+- 96 个 skill 文件
+- 6 个职能领域：财务报表、会计核算、税务申报、经济活动分析、管理办法、法规知识库
+- 3 个脱敏 demo
+- 豆包、马维斯、Trae Solo 场景包
+- 可选 MCP Server
+- 所有 skill 为 `research-verified`，尚待 CPA 或税务专家正式审核
+
+验证命令：
 
 ```bash
-git clone https://github.com/philip-wong2026/china-construction-fintax-skills.git
-cd china-construction-fintax-skills
 python3 scripts/validate-skills.py
 python3 tests/test_demo_contracts.py
+python3 tests/test_skill_integrity.py
+python3 tests/test_mcp_loading.py
 ```
 
-然后打开 [START_HERE.md](START_HERE.md)，按你的场景选择对应技能 slug。
+## 给专业用户和开发者
 
-如果你还不清楚“skills 装到哪里、跟普通提示词有什么区别、跟 AI workspace 有什么关系”，先读 [docs/beginner-guide.md](docs/beginner-guide.md)。
+如果你已经熟悉 GitHub、MCP 或 AI agent，可以继续看：
 
-### 方式一：直接引用（任何 AI 工具）
+- [START_HERE.md](START_HERE.md)：按 6 个核心财税场景选择 skill
+- [skills/README.md](skills/README.md)：skill 文件索引
+- [mcp/SMOKE_TEST.md](mcp/SMOKE_TEST.md)：MCP 本地联调
+- [docs/release-v0.1.0-public-alpha.md](docs/release-v0.1.0-public-alpha.md)：第一个公开版本发布说明草稿
 
-将 `skills/` 目录加入你的 AI 项目上下文。所有技能文件均为纯 Markdown，AI 代理可直接读取。
+## 贡献方式
 
-### 方式二：MCP Server（Claude Desktop / Cursor / Codex MCP）
+欢迎提交脱敏样例、使用反馈、错漏更正和场景建议。
 
-```bash
-cd china-construction-fintax-skills/mcp
-python3 -m pip install -e .
-```
+特别需要：
 
-在 `claude_desktop_config.json` 中添加：
-
-```json
-{
-  "mcpServers": {
-    "ccfts": { "command": "ccfts-mcp" }
-  }
-}
-```
-
-如果 `ccfts-mcp` 不在 shell 的 `PATH` 中，请使用 `python3 -m pip show -f ccfts-mcp` 找到脚本安装位置，并在 MCP 客户端配置中填写完整路径。
-
-### 方式三：桌面 AI 场景包（豆包 / 马维斯）
-
-如果用户不熟悉 GitHub、MCP 或项目目录，使用 [agent-packs/](agent-packs/)：
-
-- 豆包用户：上传 [agent-packs/doubao/flash-report.md](agent-packs/doubao/flash-report.md) 或 [agent-packs/doubao/vat-prepayment.md](agent-packs/doubao/vat-prepayment.md)
-- 马维斯用户：读取或上传 [agent-packs/marvis/desktop-finance-review.md](agent-packs/marvis/desktop-finance-review.md)
-- Trae Solo 用户：参考 [agent-packs/trae-solo/README.md](agent-packs/trae-solo/README.md)
-
-更多平台接入方式见 [docs/integrations/](docs/integrations/)。
-
-## 验证状态
-
-- **结构验证**：`python3 scripts/validate-skills.py` → 96 files, 0 issues
-- **CI 验证**：GitHub Actions 每次 push/PR 运行结构、完整性、MCP loading 和 demo 契约测试
-- **MCP 解析**：多行 YAML list、跨引用、slug 别名均通过 helper 测试；完整客户端联调见 `mcp/SMOKE_TEST.md`
-- **示例数据**：`examples/` 提供脱敏教学样例和 expected 输出，用于演示流程，不代表真实企业报表
-- **历史数据验证**：部分操作技能基于施工企业 Q3/Q4 2025 及 2026M05 实际财务数据验证，快报匹配率 99.2%
-- **脱敏**：0 个真实企业/项目/地名残留
-
-## 已知限制
-
-- MCP 服务器需用户自行安装；本地 helper/parser 已验证，MCP 客户端联调需按 `mcp/SMOKE_TEST.md` 执行
-- 全部 96 个文件尚未经持证 CPA 审核（`verified_by: pending`）
-- `tests/` 目前以结构、解析和 demo 契约测试为主，尚未覆盖完整会计/税务规则自动验算
-
-## 质量等级
-
-| 等级 | 含义 | 当前状态 |
-|------|------|---------|
-| `research-verified` | 基于权威来源起草，待持证会计师审核签字 | **所有 96 个文件** |
-| `accountant-verified` | 已由持证注册会计师审核并署名 | 暂无（待未来 CPA 审核） |
-
-## 覆盖范围
-
-| 维度 | 覆盖 |
-|------|------|
-| 监管机构 | SASAC / MOF / STA / MOHURD |
-| 职能领域 | 财务报表 / 会计核算 / 税务申报 / 经济活动分析 / 管理办法 / 法规知识库 |
-| 组织层级 | 央企集团 / 独立法人子公司 / 分公司 / 项目部 / 项目公司SPV / 小企业 / 境外 |
-| 工程行业 | 铁路 / 公路 / 市政(含城轨) / 房建 / 水利水电 / 港口航道 / 矿山 / 机电安装 |
-| 企业规模 | 大型央企 / 中型 / 小型 / 个体户 |
-| 税种 | VAT一般 / VAT简易 / 跨区域预缴 / CIT / 印花税 |
-| 特殊场景 | 质保金 / 竣工结算 / EPC / 专项债 / PPP / 政府补贴 / 代局指 / 清收清欠 / 亏损合同 / 变更索赔 |
-
-## 贡献
-
-欢迎提交 PR。技能文件的修改需附带验证数据。
+- 施工企业财务快报脱敏样例
+- 增值税跨区域预缴实际场景反馈
+- 清收清欠、竣工结算、质保金、资金计划等项目管理场景
+- CPA、税务师、审计人员或建筑企业专家复核意见
 
 提交前建议运行：
 
 ```bash
 python3 scripts/validate-skills.py
-python3 tests/test_skill_integrity.py
-python3 tests/test_mcp_loading.py
 python3 tests/test_demo_contracts.py
 ```
 
@@ -166,10 +162,10 @@ python3 tests/test_demo_contracts.py
 
 ## 作者
 
-Philip Wong — 基于在中国施工企业财务快报自动化的实战经验构建。
+Philip Wong — 基于中国施工企业财务快报、项目财税管理和 AI workspace 实践整理。
 
 本技能库基于公开法规、准则和中国施工行业公开资料整理，不代表任何特定企业的内部制度或数据。
 
 ## 许可证
 
-AGPL-3.0 — 详见 [LICENSE](LICENSE)
+AGPL-3.0 — 详见 [LICENSE](LICENSE)。

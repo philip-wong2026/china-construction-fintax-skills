@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-label="How to use CCFTS">
+  <rect width="1200" height="640" fill="#f7f8fa"/>
+  <text x="60" y="70" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700" fill="#1f2937">第一次使用，只要四步</text>
+  <text x="60" y="112" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#4b5563">不懂代码也可以先用场景包和背景包试跑脱敏样本</text>
+
+  <g>
+    <rect x="70" y="180" width="240" height="300" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+    <circle cx="112" cy="222" r="26" fill="#2563eb"/>
+    <text x="103" y="232" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">1</text>
+    <text x="100" y="280" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="24" font-weight="700" fill="#111827">选场景</text>
+    <text x="100" y="325" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">快报检查</text>
+    <text x="100" y="358" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">增值税跨区域预缴</text>
+    <text x="100" y="391" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">清收清欠分析</text>
+  </g>
+
+  <g>
+    <rect x="350" y="180" width="240" height="300" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+    <circle cx="392" cy="222" r="26" fill="#2563eb"/>
+    <text x="383" y="232" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">2</text>
+    <text x="380" y="280" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="24" font-weight="700" fill="#111827">填背景包</text>
+    <text x="380" y="325" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">你是谁</text>
+    <text x="380" y="358" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">处理哪个主体</text>
+    <text x="380" y="391" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">期间和资料边界</text>
+  </g>
+
+  <g>
+    <rect x="630" y="180" width="240" height="300" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+    <circle cx="672" cy="222" r="26" fill="#2563eb"/>
+    <text x="663" y="232" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">3</text>
+    <text x="660" y="280" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="24" font-weight="700" fill="#111827">交给 AI</text>
+    <text x="660" y="325" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">上传场景包</text>
+    <text x="660" y="358" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">上传脱敏资料</text>
+    <text x="660" y="391" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">让 AI 先确认背景</text>
+  </g>
+
+  <g>
+    <rect x="910" y="180" width="240" height="300" rx="14" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+    <circle cx="952" cy="222" r="26" fill="#2563eb"/>
+    <text x="943" y="232" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">4</text>
+    <text x="940" y="280" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="24" font-weight="700" fill="#111827">人工复核</text>
+    <text x="940" y="325" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">看缺失资料</text>
+    <text x="940" y="358" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">看风险提示</text>
+    <text x="940" y="391" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="19" fill="#374151">不直接报送</text>
+  </g>
+
+  <path d="M315 330 H345" stroke="#9ca3af" stroke-width="4"/>
+  <path d="M595 330 H625" stroke="#9ca3af" stroke-width="4"/>
+  <path d="M875 330 H905" stroke="#9ca3af" stroke-width="4"/>
+
+  <text x="100" y="555" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="22" font-weight="700" fill="#1f2937">关键点：</text>
+  <text x="190" y="555" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="22" fill="#374151">Skill 告诉 AI 行业方法，背景包告诉 AI 你的具体工作。</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-label="CCFTS context pack">
+  <rect width="1200" height="560" fill="#f7f8fa"/>
+  <text x="60" y="70" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700" fill="#1f2937">为什么需要“项目背景包”</text>
+  <text x="60" y="112" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#4b5563">装了 skill 后，AI 仍然不知道你的企业、项目、岗位和本地口径，需要你补充背景</text>
+
+  <rect x="80" y="170" width="450" height="285" rx="16" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <text x="120" y="220" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="28" font-weight="700" fill="#111827">CCFTS Skill</text>
+  <text x="120" y="270" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="21" fill="#374151">提供行业通用方法</text>
+  <text x="120" y="310" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">快报怎么检查</text>
+  <text x="120" y="345" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">税务怎么判断</text>
+  <text x="120" y="380" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">风险怎么提示</text>
+
+  <rect x="670" y="170" width="450" height="285" rx="16" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <text x="710" y="220" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="28" font-weight="700" fill="#111827">项目背景包</text>
+  <text x="710" y="270" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="21" fill="#374151">提供本次具体情况</text>
+  <text x="710" y="310" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">你是什么岗位</text>
+  <text x="710" y="345" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">主体和期间是什么</text>
+  <text x="710" y="380" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" fill="#374151">资料和复核边界是什么</text>
+
+  <circle cx="600" cy="312" r="38" fill="#2563eb"/>
+  <text x="586" y="323" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="34" font-weight="700" fill="#ffffff">+</text>
+
+  <rect x="260" y="485" width="680" height="42" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="305" y="513" font-family="Arial, 'Microsoft YaHei', sans-serif" font-size="20" font-weight="700" fill="#065f46">两者一起给 AI，才可能得到有业务边界的分析结果。</text>
+</svg>
