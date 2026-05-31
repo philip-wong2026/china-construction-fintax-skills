@@ -1,15 +1,31 @@
 # CCFTS — China Construction Enterprise Finance & Tax Skills
 
 [![Skills](https://img.shields.io/badge/skills-96-blue)](https://github.com/philip-wong2026/china-construction-fintax-skills)
-[![Validation](https://img.shields.io/badge/validation-100%25-brightgreen)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+[![Validation](https://github.com/philip-wong2026/china-construction-fintax-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/philip-wong2026/china-construction-fintax-skills/actions/workflows/validate.yml)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-orange)](LICENSE)
-[![Status](https://img.shields.io/badge/status-Internal%20Preview%20%2F%20Alpha-lightgrey)](https://github.com/philip-wong2026/china-construction-fintax-skills)
+[![Status](https://img.shields.io/badge/status-Public%20Alpha-lightgrey)](https://github.com/philip-wong2026/china-construction-fintax-skills)
 
 ## 中国施工企业财税技能包
 
 为 AI 代理（Claude、Codex、DeepSeek 及任何支持 MCP 的客户端）提供结构化的中国施工企业财务会计与税务知识。从科目余额表到财务快报，从增值税简易计税到完工百分比法——把中国施工企业财税专家的经验变成可复用的 AI 技能文件。
 
-**当前阶段**：**Internal Preview / Alpha** — 96 个技能文件，6 个职能领域全覆盖。面向懂施工企业财税业务的 AI agent 使用者，用于辅助检索、推理、工作流组织和检查，不作为最终合规意见。全部 `research-verified`（待 CPA 审核）。
+**当前阶段**：**Public Alpha** — 96 个技能文件，6 个职能领域全覆盖。面向懂施工企业财税业务的 AI agent 使用者，用于辅助检索、推理、工作流组织和检查，不作为最终合规意见。全部 `research-verified`（待 CPA 审核）。
+
+不知道从哪里开始？先看 [START_HERE.md](START_HERE.md)，里面按 6 个真实财税场景列出了推荐加载顺序、输入材料、输出结果和人工复核点。
+
+## 适用边界
+
+**适合：**
+
+- 施工企业财务、税务、报表、经营分析人员用 AI agent 做资料检索、规则检查和工作流组织
+- 构建中文财税垂直 AI agent、MCP 工具或 domain skills 的开发者
+- 学习中国施工企业财税场景下的技能文件组织方式和验证方法
+
+**不适合：**
+
+- 直接替代 CPA、税务师、律师或企业正式内控制度
+- 未经人工复核就用于正式纳税申报、审计签字、监管报送或重大经营决策
+- 作为通用中国会计准则知识库使用；本项目当前聚焦施工企业场景
 
 ## 设计理念
 
@@ -46,6 +62,17 @@ china-construction-fintax-skills/
 
 ## 快速开始
 
+### 5 分钟试用
+
+```bash
+git clone https://github.com/philip-wong2026/china-construction-fintax-skills.git
+cd china-construction-fintax-skills
+python3 scripts/validate-skills.py
+python3 tests/test_demo_contracts.py
+```
+
+然后打开 [START_HERE.md](START_HERE.md)，按你的场景选择对应技能 slug。
+
 ### 方式一：直接引用（任何 AI 工具）
 
 将 `skills/` 目录加入你的 AI 项目上下文。所有技能文件均为纯 Markdown，AI 代理可直接读取。
@@ -72,6 +99,7 @@ python3 -m pip install -e .
 ## 验证状态
 
 - **结构验证**：`python3 scripts/validate-skills.py` → 96 files, 0 issues
+- **CI 验证**：GitHub Actions 每次 push/PR 运行结构、完整性、MCP loading 和 demo 契约测试
 - **MCP 解析**：多行 YAML list、跨引用、slug 别名均通过 helper 测试；完整客户端联调见 `mcp/SMOKE_TEST.md`
 - **示例数据**：`examples/` 提供脱敏教学样例和 expected 输出，用于演示流程，不代表真实企业报表
 - **历史数据验证**：部分操作技能基于施工企业 Q3/Q4 2025 及 2026M05 实际财务数据验证，快报匹配率 99.2%
@@ -105,6 +133,19 @@ python3 -m pip install -e .
 ## 贡献
 
 欢迎提交 PR。技能文件的修改需附带验证数据。
+
+提交前建议运行：
+
+```bash
+python3 scripts/validate-skills.py
+python3 tests/test_skill_integrity.py
+python3 tests/test_mcp_loading.py
+python3 tests/test_demo_contracts.py
+```
+
+## 免责声明
+
+本项目不构成法律、税务、审计、会计或投资建议。AI 输出必须由具备相应专业能力的人员结合最新法规、地方口径和企业制度复核后使用。详见 [DISCLAIMER.md](DISCLAIMER.md)。
 
 ## 作者
 

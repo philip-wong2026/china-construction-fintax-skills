@@ -1,0 +1,31 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate skill structure
+        run: python3 scripts/validate-skills.py
+
+      - name: Test skill integrity
+        run: python3 tests/test_skill_integrity.py
+
+      - name: Test MCP loading helpers
+        run: python3 tests/test_mcp_loading.py
+
+      - name: Test demo contracts
+        run: python3 tests/test_demo_contracts.py
+
