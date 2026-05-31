@@ -1,0 +1,2 @@
+- Internal only: China Construction Enterprise Finance & Tax Skills project.
+- Do not casually create new top-level entries; follow repo structure.

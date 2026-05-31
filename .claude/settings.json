@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(python3 *)",
+      "Bash(cd *)",
+      "Bash(rm *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+      "Bash(sed *)",
+      "Bash(xargs *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(echo *)",
+      "Bash(pip *)",
+      "Bash(brew *)",
+      "WebSearch(*)",
+      "WebFetch(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "TodoWrite(*)"
+    ]
+  }
+}

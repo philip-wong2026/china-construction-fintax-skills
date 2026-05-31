@@ -1,0 +1,569 @@
+"""
+CCFTS MCP Server — serves China Construction Enterprise Finance & Tax skill files.
+
+Thin wrapper that exposes skills/ markdown files via MCP tools.
+Skills work without this server; the server is a convenience for MCP-compatible clients.
+
+Architecture mirrors OpenAccountants MCP server (openaccountants/openaccountants).
+"""
+
+import os
+import re
+import json
+import logging
+from pathlib import Path
+from urllib.parse import urlencode
+
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent, Prompt, PromptMessage, EmbeddedResource
+
+logger = logging.getLogger("ccfts-mcp")
+
+# ── Resolve skills root ──────────────────────────────────────────
+_SKILLS_ROOT = os.environ.get("CCFTS_ROOT")
+if not _SKILLS_ROOT:
+    _SKILLS_ROOT = Path(__file__).resolve().parent.parent.parent / "skills"
+else:
+    _SKILLS_ROOT = Path(_SKILLS_ROOT)
+
+MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
+
+# ── Slug alias map (backward compatibility) ──────────────────────
+SLUG_ALIASES = {
+    # Old slug → new canonical slug (populated as refactoring progresses)
+    # Phase 2 Base+SLOT migration (2026-05-31): all 7 operational skills migrated
+    "ccfts-rounding-rules": "ccfts-fr-all-rounding-rules",
+    "ccfts-entity-type-rules": "ccfts-fr-all-entity-type-rules",
+    "ccfts-profit-statement": "ccfts-fr-all-profit-statement",
+    "ccfts-balance-sheet": "ccfts-fr-all-balance-sheet",
+    "ccfts-chart-of-accounts": "ccfts-acct-all-chart-of-accounts",
+    "ccfts-quick-report-mapping": "ccfts-fr-all-quick-report-mapping",
+    "ccfts-period-end-adjustments": "ccfts-fr-all-period-end-adjustments",
+}
+
+# ── Intent catalogue ─────────────────────────────────────────────
+INTENT_CATALOGUE = {
+    "quick-report": {
+        "keywords": ["快报", "quick report", "科目余额表转换", "trial balance", "编制快报"],
+        "skills": ["ccfts-workflow-base", "ccfts-quick-report-mapping", "ccfts-acct-all-chart-of-accounts", "ccfts-fr-all-rounding-rules"],
+    },
+    "entity-diagnosis": {
+        "keywords": ["主体", "企业类型", "投资公司", "总包部", "entity type"],
+        "skills": ["ccfts-fr-all-entity-type-rules", "ccfts-fr-spv-entity-type-rules", "ccfts-fr-project-unit-entity-type-rules"],
+    },
+    "account-mapping": {
+        "keywords": ["科目", "映射", "科目编号", "chart of accounts", "COA"],
+        "skills": ["ccfts-acct-all-chart-of-accounts", "ccfts-acct-spv-chart-of-accounts", "ccfts-acct-project-unit-chart-of-accounts"],
+    },
+    "profit-statement": {
+        "keywords": ["利润", "损益", "P&L", "利润表", "净利润", "营业收入"],
+        "skills": ["ccfts-fr-all-profit-statement", "ccfts-fr-spv-profit-statement", "ccfts-fr-project-unit-profit-statement"],
+    },
+    "balance-sheet": {
+        "keywords": ["资产负债", "balance sheet", "B/S", "资产总计", "负债合计"],
+        "skills": ["ccfts-fr-all-balance-sheet", "ccfts-fr-spv-balance-sheet", "ccfts-fr-project-unit-balance-sheet"],
+    },
+    "rounding": {
+        "keywords": ["取整", "四舍五入", "ROUND", "临界值", "±1万"],
+        "skills": ["ccfts-fr-all-rounding-rules", "ccfts-fr-spv-rounding-rules", "ccfts-fr-project-unit-rounding-rules"],
+    },
+    "period-end": {
+        "keywords": ["期末调整", "未结转", "非季度末", "open period"],
+        "skills": ["ccfts-fr-all-period-end-adjustments", "ccfts-fr-spv-period-end-adjustments", "ccfts-fr-project-unit-period-end-adjustments"],
+    },
+    "vat-general-filing": {
+        "keywords": ["增值税申报", "VAT申报", "一般计税", "9%", "销项税额", "进项税额"],
+        "skills": ["ccfts-tax-all-vat-general-filing"],
+        "references": ["ccfts-intel-sta-vat-law-2026"],
+    },
+    "vat-prepayment": {
+        "keywords": ["增值税预缴", "预征", "跨区域预缴", "2%预征", "外管证"],
+        "skills": ["ccfts-tax-all-vat-cross-region-prepayment"],
+        "references": ["ccfts-intel-sta-vat-law-2026"],
+    },
+    "vat-simplified": {
+        "keywords": ["简易计税", "清包工", "3%", "甲供工程", "征收率"],
+        "skills": ["ccfts-tax-all-vat-simplified-filing"],
+        "references": ["ccfts-intel-sta-vat-law-2026"],
+    },
+    "cit-prepayment": {
+        "keywords": ["企业所得税预缴", "0.2%", "汇总纳税", "跨地区", "cit prepayment"],
+        "skills": ["ccfts-tax-all-cit-prepayment-filing"],
+        "references": ["ccfts-intel-sta-cit-prepayment-rules"],
+    },
+    "stamp-tax": {
+        "keywords": ["印花税", "施工合同印花税", "万分之三", "stamp tax", "建设工程合同"],
+        "skills": ["ccfts-tax-all-stamp-tax"],
+        "references": [],
+    },
+    "e-invoice": {
+        "keywords": ["全电发票", "电子发票", "数电票", "开票", "红冲", "备注栏"],
+        "skills": ["ccfts-tax-all-e-invoice-operations"],
+        "references": ["ccfts-intel-sta-e-invoice-mandate"],
+    },
+    "consolidation": {
+        "keywords": ["合并报表", "合并抵销", "CAS 33", "合并范围", "consolidation", "合并工作底稿"],
+        "skills": ["ccfts-intel-mof-cas33-consolidation", "ccfts-fr-all-consolidation-workflow", "ccfts-fr-all-consolidation-report"],
+        "references": ["ccfts-intel-mof-cas33-consolidation"],
+    },
+    "performance-kpi": {
+        "keywords": ["一利五率", "绩效考核", "利润总额", "ROE", "营业收现率", "全员劳动生产率"],
+        "skills": ["ccfts-intel-sasac-one-profit-five-rates"],
+        "references": ["ccfts-intel-sasac-one-profit-five-rates"],
+    },
+    "safety-fund": {
+        "keywords": ["安全生产费", "专项储备", "3.5%", "3.0%", "2.0%", "1.5%", "safety fund"],
+        "skills": ["ccfts-intel-mohurd-safety-fund-rates"],
+        "references": ["ccfts-intel-mohurd-safety-fund-rates"],
+    },
+    "financial-settlement": {
+        "keywords": ["财务决算", "年度决算", "annual settlement", "四月", "审计"],
+        "skills": ["ccfts-intel-sasac-annual-settlement", "ccfts-fr-all-annual-settlement-workflow"],
+        "references": ["ccfts-intel-sasac-annual-settlement"],
+    },
+    "flash-report-workflow": {
+        "keywords": ["编制快报", "快报流程", "月度快报编制", "flash report process"],
+        "skills": ["ccfts-fr-all-flash-report-workflow", "ccfts-fr-all-quick-report-mapping"],
+        "references": ["ccfts-intel-sasac-flash-report-deadlines"],
+    },
+    "epc-accounting": {
+        "keywords": ["EPC", "总承包", "设计采购施工", "turnkey", "交钥匙", "EPC收入", "EPC增值税"],
+        "skills": ["ccfts-intel-mof-epc-accounting", "ccfts-fr-all-project-delivery-modes"],
+        "references": ["ccfts-intel-mof-epc-accounting", "ccfts-intel-mof-cas14-revenue"],
+    },
+    "special-bond": {
+        "keywords": ["专项债", "地方政府专项债券", "special bond", "债贷组合"],
+        "skills": ["ccfts-intel-mof-special-bond-project", "ccfts-fr-all-project-delivery-modes"],
+        "references": ["ccfts-intel-mof-special-bond-project"],
+    },
+    "retention-money": {
+        "keywords": ["质保金", "预留金", "保修金", "保证金", "retention", "质保期", "缺陷责任期"],
+        "skills": ["ccfts-fr-all-retention-money"],
+        "references": ["ccfts-intel-mof-cas14-revenue", "ccfts-intel-sta-vat-law-2026"],
+    },
+    "final-account": {
+        "keywords": ["竣工结算", "竣工决算", "final account", "送审", "审减", "结算争议"],
+        "skills": ["ccfts-fr-all-final-account-settlement", "ccfts-fr-all-retention-money"],
+        "references": ["ccfts-intel-mof-cas14-revenue"],
+    },
+    "government-subsidy": {
+        "keywords": ["政府补贴", "政府补助", "专项资金", "财政拨款", "CAS 16", "递延收益"],
+        "skills": ["ccfts-intel-mof-government-subsidies", "ccfts-fr-all-government-subsidy-treatment"],
+        "references": ["ccfts-intel-mof-government-subsidies"],
+    },
+}
+
+# ── Helpers ──────────────────────────────────────────────────────
+
+def _safe_resolve(slug: str) -> Path:
+    """Resolve slug to file path, preventing directory traversal."""
+    for root, _, files in os.walk(_SKILLS_ROOT):
+        for f in files:
+            if f == f"{slug}.md":
+                return Path(root) / f
+    raise FileNotFoundError(slug)
+
+
+def _parse_frontmatter(filepath: Path) -> dict:
+    """Parse YAML frontmatter from a skill file, matching the validator's logic.
+
+    Handles multi-line YAML lists and all list fields:
+    depends_on, entity_types, entity_levels, domains, enterprise_scales,
+    triggers, references, slots, sources.
+    """
+    LIST_FIELDS = {"depends_on", "entity_types", "entity_levels", "domains",
+                   "enterprise_scales", "triggers", "references", "slots", "sources"}
+
+    text = filepath.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return {}
+    end = text.find("---", 3)
+    if end == -1:
+        return {}
+    fm_text = text[3:end].strip()
+    result = {}
+    current_list_key = None
+    current_list_values = []
+    for line in fm_text.splitlines():
+        line_stripped = line.strip()
+        # Multi-line list continuation (YAML: "  - value")
+        if current_list_key and line_stripped.startswith("- "):
+            val = line_stripped[2:].strip().strip('"').strip("'")
+            current_list_values.append(val)
+            continue
+        # End of list — save and reset
+        if current_list_key and not line_stripped.startswith("- "):
+            result[current_list_key] = current_list_values
+            current_list_key = None
+            current_list_values = []
+        if ":" not in line_stripped:
+            continue
+        key, _, value = line_stripped.partition(":")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'").strip()
+        # Start of a new list (value is empty, list items follow on indented lines)
+        if not value and key in LIST_FIELDS:
+            current_list_key = key
+            current_list_values = []
+            continue
+        if key in LIST_FIELDS:
+            val = value.strip("[]")
+            result[key] = [v.strip().strip('"').strip("'") for v in val.split(",") if v.strip()] if val else []
+        elif key in ("jurisdiction",):
+            result[key] = value
+        elif key in ("is_base",):
+            result[key] = value.lower() == "true"
+        else:
+            result[key] = value
+    # Save any trailing list
+    if current_list_key and current_list_values:
+        result[current_list_key] = current_list_values
+    return result
+
+
+def _list_skills(jurisdiction: str | None = None, category: str | None = None) -> list[dict]:
+    """Enumerate all skill files with parsed frontmatter."""
+    skills = []
+    for root, _, files in os.walk(_SKILLS_ROOT):
+        for f in files:
+            if not f.endswith(".md"):
+                continue
+            fp = Path(root) / f
+            fm = _parse_frontmatter(fp)
+            if not fm:
+                continue
+            # Filter
+            if jurisdiction and fm.get("jurisdiction", "") != jurisdiction:
+                continue
+            if category and fm.get("category", "") != category:
+                continue
+            skill_entry = {
+                "slug": fm.get("name", f.replace(".md", "")),
+                "description": fm.get("description", ""),
+                "jurisdiction": fm.get("jurisdiction", ""),
+                "category": fm.get("category", ""),
+                "quality_tier": fm.get("quality_tier", "research-verified"),
+                "verified_by": fm.get("verified_by", "pending"),
+                "version": fm.get("version", "0.1"),
+                "entity_levels": fm.get("entity_levels", []),
+                "domains": fm.get("domains", []),
+                "is_base": fm.get("is_base", False),
+            }
+            # Include authority for intelligence skills (needed for list_intelligence filtering)
+            if fm.get("authority"):
+                skill_entry["authority"] = fm["authority"]
+            skills.append(skill_entry)
+    return skills
+
+
+def _search_skills(query: str, limit: int = 25) -> list[dict]:
+    """Search skill file bodies for keyword matches."""
+    results = []
+    qlower = query.lower()
+    for root, _, files in os.walk(_SKILLS_ROOT):
+        for f in files:
+            if not f.endswith(".md"):
+                continue
+            fp = Path(root) / f
+            text = fp.read_text(encoding="utf-8").lower()
+            if qlower in text:
+                fm = _parse_frontmatter(fp)
+                # Extract surrounding context (~100 chars around first match)
+                pos = text.find(qlower)
+                start, end = max(0, pos - 50), min(len(text), pos + len(query) + 50)
+                snippet = text[start:end].replace("\n", " ").strip()
+                results.append({
+                    "slug": fm.get("name", f.replace(".md", "")),
+                    "context": f"...{snippet}...",
+                })
+    return results[:limit]
+
+
+# ── MCP Server ───────────────────────────────────────────────────
+
+server = Server("ccfts-mcp")
+
+
+@server.list_tools()
+async def list_tools() -> list[Tool]:
+    return [
+        Tool(
+            name="list_skills",
+            description="列出所有可用的 CCFTS 技能文件，可按管辖区或分类过滤",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "jurisdiction": {"type": "string", "description": "过滤管辖区（如 CN, GLOBAL）"},
+                    "category": {"type": "string", "description": "过滤分类（foundation, financial-reporting, intelligence）"},
+                },
+            },
+        ),
+        Tool(
+            name="get_skill",
+            description="按 slug 获取完整的技能文件内容",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "slug": {"type": "string", "description": "技能文件 slug（如 ccfts-quick-report-mapping）"},
+                },
+                "required": ["slug"],
+            },
+        ),
+        Tool(
+            name="get_skill_sections",
+            description="获取技能文件的章节结构（标题 + 内容 + 层级）",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "slug": {"type": "string", "description": "技能文件 slug"},
+                },
+                "required": ["slug"],
+            },
+        ),
+        Tool(
+            name="search_skills",
+            description="在所有技能文件中搜索关键词",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "搜索关键词"},
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            name="start",
+            description="根据用户意图推荐需要加载的技能文件",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "intent": {"type": "string", "description": "用户意图描述（自然语言）"},
+                    "jurisdiction": {"type": "string", "description": "可选：管辖区过滤"},
+                },
+                "required": ["intent"],
+            },
+        ),
+        Tool(
+            name="submit_feedback",
+            description="构建提交反馈的 GitHub Issue URL",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "skill_slug": {"type": "string", "description": "相关技能 slug"},
+                    "summary": {"type": "string", "description": "反馈摘要"},
+                    "title": {"type": "string", "description": "可选：Issue 标题"},
+                },
+                "required": ["skill_slug", "summary"],
+            },
+        ),
+        Tool(
+            name="list_intelligence",
+            description="列出所有法规知识技能，按监管机构过滤",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "authority": {"type": "string", "description": "过滤监管机构（SASAC, MOF, STA, MOHURD）"},
+                },
+            },
+        ),
+        Tool(
+            name="resolve_references",
+            description="解析技能文件的所有引用链（depends_on + references），返回完整加载计划",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "slug": {"type": "string", "description": "技能 slug"},
+                },
+                "required": ["slug"],
+            },
+        ),
+    ]
+
+
+@server.call_tool()
+async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    if name == "list_skills":
+        skills = _list_skills(
+            jurisdiction=arguments.get("jurisdiction"),
+            category=arguments.get("category"),
+        )
+        return [TextContent(type="text", text=json.dumps(skills, ensure_ascii=False, indent=2))]
+
+    elif name == "get_skill":
+        slug = arguments["slug"]
+        try:
+            fp = _safe_resolve(slug)
+        except FileNotFoundError:
+            return [TextContent(type="text", text=f"Skill not found: {slug}")]
+        content = fp.read_text(encoding="utf-8")
+        if len(content.encode("utf-8")) > MAX_FILE_SIZE:
+            return [TextContent(type="text", text=f"Skill file too large: {slug}")]
+        # Append provenance footer
+        fm = _parse_frontmatter(fp)
+        footer = (f"\n\n---\n*CCFTS skill `{slug}` | "
+                  f"jurisdiction: {fm.get('jurisdiction','?')} | "
+                  f"quality: {fm.get('quality_tier','?')} | "
+                  f"version: {fm.get('version','?')}*")
+        return [TextContent(type="text", text=content + footer)]
+
+    elif name == "get_skill_sections":
+        slug = arguments["slug"]
+        try:
+            fp = _safe_resolve(slug)
+        except FileNotFoundError:
+            return [TextContent(type="text", text=f"Skill not found: {slug}")]
+        content = fp.read_text(encoding="utf-8")
+        # Parse headings
+        sections = []
+        for line in content.splitlines():
+            if line.startswith("#"):
+                level = len(line) - len(line.lstrip("#"))
+                heading = line.lstrip("#").strip()
+                sections.append({"heading": heading, "level": level})
+        # Find body after frontmatter
+        body_start = content.find("---", 3) + 3
+        sections_text = content[body_start:].strip()
+        return [TextContent(type="text", text=json.dumps({
+            "slug": slug,
+            "sections": sections,
+            "body_preview": sections_text[:500],
+        }, ensure_ascii=False, indent=2))]
+
+    elif name == "search_skills":
+        results = _search_skills(arguments["query"])
+        return [TextContent(type="text", text=json.dumps(results, ensure_ascii=False, indent=2))]
+
+    elif name == "start":
+        intent = arguments.get("intent", "").lower()
+        matched_intent = None
+        max_score = 0
+        for key, entry in INTENT_CATALOGUE.items():
+            score = sum(1 for kw in entry["keywords"] if kw.lower() in intent)
+            if score > max_score:
+                max_score = score
+                matched_intent = key
+        if matched_intent and max_score > 0:
+            plan = {
+                "intent": matched_intent,
+                "recommended_skills": INTENT_CATALOGUE[matched_intent]["skills"],
+                "status": "ready",
+            }
+        elif max_score == 0:
+            plan = {
+                "intent": "unknown",
+                "message": "无法从意图描述中识别具体任务类型。可用的意图类型：" + ", ".join(INTENT_CATALOGUE.keys()),
+                "status": "needs_clarification",
+            }
+        # Apply jurisdiction filter
+        if arguments.get("jurisdiction"):
+            plan["jurisdiction"] = arguments["jurisdiction"]
+        return [TextContent(type="text", text=json.dumps(plan, ensure_ascii=False, indent=2))]
+
+    elif name == "submit_feedback":
+        slug = arguments["skill_slug"]
+        summary = arguments["summary"]
+        title = arguments.get("title", f"Feedback: {slug}")
+        base_url = "https://github.com/openaccountants/openaccountants/issues/new"
+        params = urlencode({
+            "title": title,
+            "body": f"**Skill**: `{slug}`\n\n**Summary**:\n{summary}\n\n(Submitted via CCFTS MCP)",
+        })
+        return [TextContent(type="text", text=(
+            f"请打开以下链接提交反馈：\n\n{base_url}?{params}\n\n"
+            f"**技能**: `{slug}`\n**摘要**: {summary}"
+        ))]
+
+    elif name == "list_intelligence":
+        authority = arguments.get("authority")
+        skills = _list_skills(category="intelligence")
+        if authority:
+            skills = [s for s in skills if s.get("authority") == authority]
+        return [TextContent(type="text", text=json.dumps(skills, ensure_ascii=False, indent=2))]
+
+    elif name == "resolve_references":
+        slug = arguments["slug"]
+        # Try alias first
+        resolved_slug = SLUG_ALIASES.get(slug, slug)
+        try:
+            fp = _safe_resolve(resolved_slug)
+        except FileNotFoundError:
+            return [TextContent(type="text", text=f"Skill not found: {slug}")]
+        fm = _parse_frontmatter(fp)
+        plan = {
+            "slug": slug,
+            "resolved_slug": resolved_slug,
+            "is_alias": slug != resolved_slug,
+            "load_order": [resolved_slug],
+            "dependencies": fm.get("depends_on", []),
+            "references": fm.get("references", []),
+            "total_files_to_load": 1 + len(fm.get("depends_on", [])) + len(fm.get("references", [])),
+        }
+        return [TextContent(type="text", text=json.dumps(plan, ensure_ascii=False, indent=2))]
+
+    return [TextContent(type="text", text=f"Unknown tool: {name}")]
+
+
+@server.list_prompts()
+async def list_prompts() -> list[Prompt]:
+    return [
+        Prompt(name="quick-report", description="完整快报编制流程：实体判定 → 科目映射 → 计算 → 自检"),
+        Prompt(name="account-mapping", description="单个科目映射：给定科目编号和主体类型，返回快报位置和取数口径"),
+        Prompt(name="rounding-check", description="验证取整决策并标记临界值科目"),
+        Prompt(name="entity-diagnosis", description="给定科目余额表，判定主体类型和适用的规则集"),
+        Prompt(name="skill-feedback", description="结构化访谈，收集对技能文件的反馈"),
+        Prompt(name="compare-entities", description="对比两种主体类型的关键差异"),
+
+    ]
+
+
+@server.get_prompt()
+async def get_prompt(name: str, arguments: dict | None) -> list[PromptMessage]:
+    if name == "quick-report":
+        text = (
+            "请按照以下流程编制快报：\n"
+            "1. 读取并解析科目余额表\n"
+            "2. 使用 `ccfts-fr-all-entity-type-rules` 判定主体类型\n"
+            "3. 使用 `ccfts-acct-all-chart-of-accounts` 确认科目结构\n"
+            "4. 使用 `ccfts-fr-all-rounding-rules` 应用正确取整模式\n"
+            "5. 使用 `ccfts-fr-all-profit-statement` 和 `ccfts-fr-all-balance-sheet` 执行映射\n"
+            "6. 运行 18 项自检清单\n"
+            "7. 如有 ±1 万元差异，执行临界值诊断"
+        )
+    elif name == "account-mapping":
+        account_code = (arguments or {}).get("account_code", "待提供")
+        text = f"请查找科目 {account_code} 在快报中的映射位置和取数口径。参考 `ccfts-acct-all-chart-of-accounts`。"
+    elif name == "rounding-check":
+        text = "请逐项检查各科目余额的万元转换是否在 0.5 临界点。参考 `ccfts-fr-all-rounding-rules` 中的诊断流程。"
+    elif name == "entity-diagnosis":
+        text = "请根据科目余额表中的科目列表判定主体类型（Type A 投资管理类 vs Type B 施工总承包类）。参考 `ccfts-fr-all-entity-type-rules` 的决策树。"
+    elif name == "skill-feedback":
+        text = (
+            "请按以下结构收集技能反馈：\n"
+            "1. 相关技能 slug\n"
+            "2. 使用场景\n"
+            "3. 技能是否准确？\n"
+            "4. 是否遗漏了关键规则？\n"
+            "5. 改进建议\n"
+            "收集完毕后调用 submit_feedback 工具。"
+        )
+    elif name == "compare-entities":
+        text = "请列出 Type A（投资管理类）和 Type B（施工总承包类）在科目结构、取整规则、资产负债和利润计算方面的核心差异。参考 `ccfts-fr-all-entity-type-rules`。"
+    else:
+        text = "未知 prompt。"
+
+    return [PromptMessage(role="user", content=TextContent(type="text", text=text))]
+
+
+# ── Entry point ──────────────────────────────────────────────────
+
+def main():
+    import asyncio
+    async def run():
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(read_stream, write_stream, server.create_initialization_options())
+    asyncio.run(run())
+
+
+if __name__ == "__main__":
+    main()

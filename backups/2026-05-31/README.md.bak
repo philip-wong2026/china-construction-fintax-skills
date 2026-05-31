@@ -1,0 +1,93 @@
+# CCFTS — China Construction Enterprise Finance & Tax Skills
+
+## 中国施工企业财税技能包
+
+为 AI 代理（Claude、Codex、DeepSeek 及任何支持 MCP 的客户端）提供结构化的中国施工企业财务会计与税务知识。从科目余额表到财务快报，从增值税简易计税到完工百分比法——把中国施工企业财税专家的经验变成可复用的 AI 技能文件。
+
+**当前阶段**：Phase 1 MVP —— 基于已验证的施工企业财务快报自动化知识体系。
+
+## 设计理念
+
+- **Markdown 优先**：技能文件即纯 .md，无需任何工具即可被 AI 代理直接读取
+- **平台无关**：同一套技能文件，Claude 用、Codex 用、未来的 DeepSeek Agent 也用
+- **深度优先**：从一个垂直领域（中国施工企业）做深做实，再逐步扩展
+- **OpenAccountants 兼容**：采用相同的 frontmatter schema 和质量等级标准，未来可向上游贡献
+- **开源免费**：AGPL-3.0，永远免费开放
+
+## 项目结构
+
+```
+china-construction-fintax-skills/
+├── skills/                          # 技能文件（核心内容）
+│   ├── foundation/                  # 通用工作流基础
+│   │   └── ccfts-workflow-base.md
+│   ├── china-construction/          # 施工企业专项技能
+│   │   ├── ccfts-entity-type-rules.md
+│   │   ├── ccfts-chart-of-accounts.md
+│   │   ├── ccfts-quick-report-mapping.md
+│   │   ├── ccfts-rounding-rules.md
+│   │   ├── ccfts-profit-statement.md
+│   │   ├── ccfts-balance-sheet.md
+│   │   └── ccfts-period-end-adjustments.md
+│   ├── intelligence/                # 参考数据（截止日期、阈值等年度变更信息）
+│   └── templates/                   # 新建技能的模板
+├── mcp/                             # MCP Server（可选，便捷封装）
+├── scripts/                         # 构建与验证工具
+├── tests/                           # 测试
+├── docs/                            # 文档
+├── LICENSE                          # AGPL-3.0
+└── README.md                        # 本文件
+```
+
+## 快速开始
+
+### 方式一：直接引用（任何 AI 工具）
+
+将 `skills/` 目录加入你的 AI 项目上下文。所有技能文件均为纯 Markdown，AI 代理可直接读取。
+
+### 方式二：MCP Server（Claude Desktop / Cursor / Codex MCP）
+
+```bash
+cd china-construction-fintax-skills/mcp
+pip install .
+```
+
+在 `claude_desktop_config.json` 中添加：
+
+```json
+{
+  "mcpServers": {
+    "ccfts": { "command": "ccfts-mcp" }
+  }
+}
+```
+
+## 验证状态
+
+所有技能文件均基于建筑施工企业（含投资管理类项目公司和施工总承包类总包部两种主体类型）的 Q3/Q4 2025 及 2026M05 实际财务数据验证，快报匹配率 99.2%。
+
+## 质量等级
+
+| 等级 | 含义 |
+|---|---|
+| `research-verified` | 基于权威来源起草，待持证会计师审核签字 |
+| `accountant-verified` | 已由持证注册会计师审核并署名 |
+
+## 路线图
+
+- **Phase 1（进行中）**：施工企业核心——科目表、快报映射、利润表/资产负债表/现金流量表、取整规则
+- **Phase 2**：增值税（建筑服务 9% / 简易计税 3%）、企业所得税（跨地区汇总纳税）、合同成本（完工百分比法）
+- **Phase 3**：中小企业会计（小企业会计准则）、小规模纳税人 VAT、个税与五险一金
+- **Phase 4**：上市公司合并报表、转让定价文档、税务稽查应对、金税四期合规
+
+## 贡献
+
+欢迎提交 PR。技能文件的修改需附带验证数据（即 skill rules 通过实际科目余额表 → 快报转换的一致性检验）。
+
+## 作者
+
+Philip Wong — 基于在中国施工企业财务快报自动化的实战经验构建。
+
+## 许可证
+
+AGPL-3.0 — 详见 [LICENSE](LICENSE)

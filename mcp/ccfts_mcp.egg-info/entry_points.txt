@@ -1,0 +1,2 @@
+[console_scripts]
+ccfts-mcp = ccfts_mcp.server:main
