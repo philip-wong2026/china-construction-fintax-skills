@@ -1,9 +1,0 @@
-[project]
-name = "ccfts-mcp"
-version = "0.3.0"
-description = "MCP server for China Construction Enterprise Finance & Tax Skills"
-requires-python = ">=3.10"
-dependencies = ["mcp>=1.0.0"]
-
-[project.scripts]
-ccfts-mcp = "ccfts_mcp.server:main"
