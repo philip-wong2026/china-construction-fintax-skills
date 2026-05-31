@@ -18,7 +18,7 @@
 ## 场景包
 
 - [施工企业快报检查](flash-report.md)
-- [VAT 跨区域预缴检查](vat-prepayment.md)
+- [增值税跨区域预缴检查](vat-prepayment.md)
 
 ## 先提醒一句
 
@@ -32,4 +32,3 @@
 - 合同编号
 - 银行账号
 - 人名
-

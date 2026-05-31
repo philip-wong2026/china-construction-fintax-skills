@@ -31,7 +31,7 @@
 ### 豆包
 
 - [施工企业快报检查](doubao/flash-report.md)
-- [VAT 跨区域预缴检查](doubao/vat-prepayment.md)
+- [增值税跨区域预缴检查](doubao/vat-prepayment.md)
 
 ### 马维斯
 
@@ -46,4 +46,3 @@
 不要把真实敏感数据直接上传到个人版 AI。
 
 先脱敏，再使用。
-

@@ -19,7 +19,7 @@ CCFTS 是一套“给 AI 看的中国施工企业财税操作手册”。
 例如：
 
 - `ccfts-fr-all-flash-report-workflow`：施工企业财务快报编制流程
-- `ccfts-tax-all-vat-cross-region-prepayment`：跨区域施工项目 VAT 预缴
+- `ccfts-tax-all-vat-cross-region-prepayment`：跨区域施工项目增值税预缴
 - `ccfts-fr-all-retention-money`：质保金处理
 - `ccfts-anlys-project-unit-profitability`：项目盈利能力分析
 
@@ -29,10 +29,10 @@ CCFTS 是一套“给 AI 看的中国施工企业财税操作手册”。
 
 你把相关 skill 提供给 AI 后，AI 可以更稳定地完成这些事情：
 
-- 判断一个主体是 SPV 项目公司、项目部、子公司还是集团层级
+- 判断一个主体是项目公司、项目部、子公司还是集团层级
 - 根据科目余额表生成施工企业快报映射思路
 - 检查资产负债表是否平衡、损益表口径是否合理
-- 判断 VAT 一般计税、简易计税、跨区域预缴的适用场景
+- 判断增值税一般计税、简易计税、跨区域预缴的适用场景
 - 列出企业所得税预缴、汇算清缴中常见的纳税调整风险
 - 分析项目盈利、现金流、垫资、两金、清收清欠
 - 给出质保金、竣工结算、变更索赔、亏损合同等场景的检查清单
@@ -140,7 +140,7 @@ python3 -m pip install -e .
 例如：
 
 - 豆包检查快报：`agent-packs/doubao/flash-report.md`
-- 豆包检查 VAT 跨区域预缴：`agent-packs/doubao/vat-prepayment.md`
+- 豆包检查增值税跨区域预缴：`agent-packs/doubao/vat-prepayment.md`
 - 马维斯读取本地文件夹检查财税资料：`agent-packs/marvis/desktop-finance-review.md`
 - Trae Solo 项目型接入：`agent-packs/trae-solo/README.md`
 
@@ -193,7 +193,7 @@ python3 -m pip install -e .
 
 - 科目余额表
 - 报表期间
-- 主体说明：这是 SPV 项目公司还是施工项目部
+- 主体说明：这是项目公司还是施工项目部
 - 是否季度末、年末
 - 如果有对照表，提供企业原报表结果
 
@@ -281,6 +281,6 @@ MCP 只是高级接入方式。直接读取 Markdown 文件就能使用核心价
 4. 不要把 AI 输出包装成最终合规意见。
 5. 输出最后必须包含“人工复核清单”。
 
-我的业务场景是：[在这里填写，例如：项目部月度快报 / SPV 快报 / VAT 跨区域预缴 / CIT 预缴 / 质保金处理]
+我的业务场景是：[在这里填写，例如：项目部月度快报 / 项目公司资料检查 / 增值税跨区域预缴 / 企业所得税预缴 / 质保金处理]
 我提供的数据是：[在这里说明你会提供什么文件或表格]
 ```

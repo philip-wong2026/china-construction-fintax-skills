@@ -21,7 +21,7 @@ CCFTS 不是一个 App，也不是一个网页系统。它是一套“给 AI 看
 你只需要用这里的文件：
 
 - [豆包：施工企业快报检查](../../agent-packs/doubao/flash-report.md)
-- [豆包：VAT 跨区域预缴检查](../../agent-packs/doubao/vat-prepayment.md)
+- [豆包：增值税跨区域预缴检查](../../agent-packs/doubao/vat-prepayment.md)
 
 用法就是：
 
@@ -60,4 +60,3 @@ Trae Solo 更适合懂项目目录、会让 AI 读取文件的人。它可以直
 普通用户先用 `agent-packs/`。
 开发者再看 `skills/` 和 `mcp/`。
 企业部署再考虑腾讯云 Agent 或 MCP 服务化。
-
