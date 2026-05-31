@@ -1,29 +1,34 @@
-# Disclaimer
+# 免责声明
 
-CCFTS is a public alpha skill library for AI-assisted finance and tax workflows in China's construction enterprise context.
+CCFTS 是一个公开试验版项目，用于探索 AI 辅助中国施工企业财税工作的方法、资料组织方式和复核清单。
 
-This repository does not provide legal, tax, audit, accounting, investment, or compliance advice. The materials are provided for research, learning, workflow organization, and AI agent context engineering only.
+本项目不构成法律、税务、审计、会计、投资、融资、招投标、内控或合规意见。项目中的 skill、场景包、demo、文档和 AI 输出，只能作为学习、研究、资料整理、检查清单生成和工作流组织的辅助材料。
 
-## Professional Review Required
+## 必须人工复核
 
-Any output generated with these skills must be reviewed by qualified professionals before it is used for:
+任何使用 CCFTS 生成的结果，在用于以下事项前，必须由具备相应专业能力的人员结合最新法规、地方口径和企业制度复核：
 
-- statutory tax filing
-- financial reporting
-- audit documentation or sign-off
-- regulatory submission
-- internal control decisions
-- investment, financing, bidding, or major business decisions
+- 纳税申报。
+- 财务报告。
+- 审计资料或审计签字。
+- 监管报送。
+- 企业内部审批。
+- 投资、融资、招投标或重大经营决策。
 
-## Source And Currency Limits
+## 来源和时效限制
 
-The skills are based on public regulations, standards, public industry materials, and anonymized practical experience. Laws, tax policies, local tax authority interpretations, enterprise systems, and reporting templates may change. Users are responsible for checking the latest applicable rules and local practice before using any result.
+本项目基于公开法规、公开准则、公开行业资料和脱敏实务经验整理。法律法规、税务政策、地方税务机关口径、企业制度和报表模板都可能变化。
 
-## No Enterprise-Specific Representation
+使用者需要自行确认最新适用规则，不能只依赖本项目或 AI 输出。
 
-This repository does not represent the internal rules, data, policies, or official position of any specific enterprise, regulator, or professional institution.
+## 不代表特定企业
 
-## Public Alpha Status
+本项目不代表任何特定企业、监管机构、专业机构或单位内部制度，也不包含任何应当保密的企业真实数据。
 
-All skills are currently marked as `research-verified` and have not yet been reviewed and signed by a licensed CPA or equivalent professional reviewer. Treat the project as an assistant for search, reasoning, and checklist generation, not as an authoritative decision system.
+如果你准备贡献案例，请务必先脱敏，并确保你有权公开相关内容。
 
+## 公开试验版状态
+
+当前所有 skill 均处于 `research-verified` 阶段，尚未形成持证注册会计师、税务师、审计人员或企业专家逐条签署的正式审核记录。
+
+请把本项目视为 AI 辅助搜索、推理、资料整理和清单生成工具，而不是权威决策系统。

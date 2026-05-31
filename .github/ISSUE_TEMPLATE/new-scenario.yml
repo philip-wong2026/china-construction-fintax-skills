@@ -1,0 +1,40 @@
+name: 请求新增场景
+description: 建议新增一个施工企业财税、经营分析或项目管理场景
+title: "[新增场景] "
+labels: ["enhancement", "scenario"]
+body:
+  - type: input
+    id: scenario
+    attributes:
+      label: 场景名称
+      description: 例如：资金计划、亏损项目预警、竣工结算、两金压降。
+    validations:
+      required: true
+  - type: textarea
+    id: user
+    attributes:
+      label: 谁会用
+      description: 例如项目财务、商务人员、税务岗、公司领导、共享中心。
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: 业务价值
+      description: 这个场景为什么值得做，能解决什么实际问题。
+    validations:
+      required: true
+  - type: textarea
+    id: inputs
+    attributes:
+      label: 需要哪些输入资料
+      description: 请列出可能需要的表格、合同、台账、报表或背景信息。
+    validations:
+      required: false
+  - type: textarea
+    id: output
+    attributes:
+      label: 希望输出什么
+      description: 例如检查清单、风险提示、领导摘要、台账分类、下一步动作。
+    validations:
+      required: false

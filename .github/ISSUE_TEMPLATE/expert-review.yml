@@ -1,0 +1,46 @@
+name: 提交专家复核意见
+description: CPA、税务师、审计人员、建筑企业财税专家提交复核意见
+title: "[专家复核] "
+labels: ["expert-review", "needs-review"]
+body:
+  - type: input
+    id: scope
+    attributes:
+      label: 复核范围
+      description: 例如某个 skill、某个 demo、某个场景包或某类规则。
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: 你的专业背景
+      options:
+        - 注册会计师或审计人员
+        - 税务师或税务人员
+        - 建筑企业财务人员
+        - 建筑企业商务/项目管理人员
+        - 数字化/信息化人员
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: comments
+    attributes:
+      label: 复核意见
+      description: 请说明准确的、需要修改的、需要限定适用范围的内容。
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: 适用边界
+      description: 是否需要区分地区、企业制度、适用期间、项目类型或监管口径。
+    validations:
+      required: false
+  - type: textarea
+    id: suggested-change
+    attributes:
+      label: 建议修改
+      description: 可直接写建议替换文字。
+    validations:
+      required: false

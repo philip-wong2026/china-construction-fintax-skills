@@ -1,231 +1,254 @@
-# CCFTS — Start Here
+# CCFTS 从这里开始
 
-> 面向懂施工企业财税业务的 AI agent 使用者。用于辅助检索、推理、工作流组织和检查，不作为最终合规意见。
+> 本页是“已经大概知道 CCFTS 是什么，准备拿它做一次具体业务试用”的入口。所有输出都只是辅助分析，不能替代企业正式审批、注册会计师、税务师、律师或审计人员意见。
 
-如果你还不清楚“AI skill 是什么、装到哪里、跟 AI workspace 有什么关系”，请先读 [docs/beginner-guide.md](docs/beginner-guide.md)。
+如果你第一次看到这个项目，请先读：
 
-如果你只会用豆包、马维斯这类桌面 AI 助手，请优先使用 [agent-packs/](agent-packs/) 中的场景包，而不是直接加载全部 96 个 skill。
+1. [README.md](README.md)：先理解项目价值和边界。
+2. [docs/quick-start-10min.md](docs/quick-start-10min.md)：按 10 分钟路径试一次。
+3. [docs/context-pack-template.md](docs/context-pack-template.md)：填写你的项目背景包。
 
-## 这是什么
+如果你只会用豆包、马维斯这类桌面 AI 助手，请优先使用 [agent-packs/](agent-packs/) 中的场景包，不要一开始就研究全部 96 个 skill。
 
-96 个中文 Markdown 技能文件，覆盖中国施工企业（铁路/公路/市政/房建/水利/港口/矿山/机电安装）的财务会计与税务全链条。AI agent 直接读取 Markdown 即可使用；另有可选的 MCP 服务器封装。
+## 它怎么用
 
-## 使用方式
+CCFTS 的核心是一批中文 Markdown 技能文件。你可以把它理解为“给 AI 看的施工企业财税作业指导书”。
 
-**方式 A（推荐）**：直接将 `skills/` 目录中的 .md 文件作为 AI agent 的上下文加载。按场景从下方索引找到对应的技能 slug，按"推荐加载顺序"逐个加载。
+最常见的使用方式有三种：
 
-**方式 B**：通过 MCP 服务器加载（需 `cd mcp && pip install -e .`）。详见 `mcp/SMOKE_TEST.md`。
+| 用法 | 适合谁 | 怎么做 |
+| --- | --- | --- |
+| 场景包 | 豆包、马维斯、手机端 AI 用户 | 上传 `agent-packs/` 里的一个场景包，再上传脱敏资料 |
+| 直接读文件 | Codex、Claude Code、Cursor、Trae Solo 用户 | 让 AI 读取本仓库，并按本页选择相关 skill |
+| MCP 接入 | 熟悉 AI agent 配置的高级用户 | 按 [mcp/SMOKE_TEST.md](mcp/SMOKE_TEST.md) 配置本地 MCP |
 
-## 6 个核心场景
+无论哪种方式，都建议同时提供 [项目背景包](docs/context-pack-template.md)。skill 只告诉 AI 行业方法，背景包才告诉 AI 你这次处理的具体主体、期间、资料和边界。
 
----
+## 6 个常用场景
 
-### 场景 1：我要编施工企业快报
+### 场景 1：检查施工企业财务快报资料
 
-**适用**：项目财务 / 报表编制人员 / AI agent
+**适合**：项目财务、报表人员、财务共享中心、AI agent。
 
-**推荐加载顺序**：
-1. `ccfts-workflow-base` — 10 步通用工作流
-2. `ccfts-fr-all-flash-report-workflow` — 快报编制完整编排
-3. `ccfts-fr-all-entity-type-rules` — 判定主体类型（Type A/B）
-4. 对应层级的 entity-type 覆盖文件（如 `ccfts-fr-spv-entity-type-rules`）
-5. `ccfts-acct-all-chart-of-accounts` + 对应层级覆盖
-6. `ccfts-fr-all-rounding-rules` + 对应层级覆盖
-7. `ccfts-fr-all-profit-statement` + `ccfts-fr-all-balance-sheet` + 对应层级覆盖
-8. `ccfts-fr-all-quick-report-mapping` — 科目余额→快报映射总流程
-9. 如非季度末：`ccfts-fr-all-period-end-adjustments` + 对应层级覆盖
+**先让 AI 读取这些 skill**：
 
-**用户需要提供**：
-- 科目余额表（.xls/.xlsx，标准列位格式）
-- 报表期间（YYYYMM）
-- 主体说明（SPV 投资管理类 or 总包部施工类？）
-- 是否季度末/年末
+1. `ccfts-workflow-base`：通用工作流。
+2. `ccfts-fr-all-flash-report-workflow`：快报资料处理流程。
+3. `ccfts-fr-all-entity-type-rules`：判断主体是项目部、项目公司、分公司、子公司还是集团层级。
+4. 对应主体层级的规则文件，例如项目部用 `ccfts-fr-project-unit-entity-type-rules`，项目公司用 `ccfts-fr-spv-entity-type-rules`。
+5. `ccfts-acct-all-chart-of-accounts`：科目表基础规则。
+6. `ccfts-fr-all-profit-statement`、`ccfts-fr-all-balance-sheet`、`ccfts-fr-all-quick-report-mapping`：利润表、资产负债表和科目映射。
 
-**应输出**：
-- 主体类型判定结果 + 置信度
-- 科目→快报映射明细表
-- 利润表 + 资产负债表（万元）
-- 差异检查表（如有对照）
-- 审核者摘要
+**你要提供**：
 
-**必须人工复核**：
-- 主体类型是否与实际组织架构一致
-- 期末调整（2211-02/6602 未结转）是否完整
-- ±1 万元差异是否只是临界值噪音（非实质性差异）
-- 其他应付款是否按正确方法计算（Type A 倒推 / Type B 直接取）
+- 科目余额表或脱敏样表。
+- 报表期间。
+- 主体说明：项目部、项目公司、分公司、子公司或集团汇总层。
+- 是否季度末、年末。
+- 如有企业原报表结果，可以作为对照。
 
----
+**希望 AI 输出**：
 
-### 场景 2：判断 VAT 一般计税 / 简易计税 / 跨区域预缴
-
-**适用**：项目财务 / 税务岗 / AI agent
-
-**推荐加载顺序**：
-1. `ccfts-intel-sta-vat-law-2026` — 增值税法 2026 法规要点
-2. `ccfts-tax-all-vat-general-filing` — 一般计税 9% 月度申报
-3. `ccfts-tax-all-vat-simplified-filing` — 简易计税 3% 条件与申报
-4. `ccfts-tax-all-vat-cross-region-prepayment` — 跨区域 2%/3% 预缴
-5. 如需子公司级申报：`ccfts-tax-subsidiary-vat-filing`
-
-**用户需要提供**：
-- 施工合同关键信息（是否甲供/清包工/EPC？合同金额？项目地址？）
-- 纳税人身份（一般纳税人 / 小规模纳税人）
-- 项目是否跨县/市/区
-
-**应输出**：
-- 适用计税方式判断（一般 9% / 简易 3% / 清包工 3% / 混合）
-- 月度销项税额计算表
-- 可抵扣进项税额归集表
-- 跨区域预缴税额计算（如有）
-- 申报表关键行次填列指引
+- 主体边界判断和判断依据。
+- 科目到报表项目的映射思路。
+- 利润表、资产负债表草稿或检查清单。
+- 缺失资料、异常点、人工复核清单。
 
 **必须人工复核**：
-- 甲供工程：2026.1.1 起终止简易计税，新签合同必须 9% → 合同日期是否在 2026.1.1 后？
-- 清包工：分票规则从严（分包普票），分包商是否能配合？
-- 跨区域预缴：项目所在地税务机关是否有特殊要求？
-- EPC 项目：E/P/C 拆分开票还是一张票？混合销售风险？
 
----
+- 主体层级是否与实际组织架构一致。
+- 报表口径是否符合本单位制度。
+- 重大差异是否已经解释。
+- AI 有没有把不确定事项说成确定结论。
 
-### 场景 3：判断企业所得税预缴
+### 场景 2：判断增值税一般计税、简易计税和跨区域预缴
 
-**适用**：子公司/工程局级财务 / AI agent
+**适合**：项目财务、税务岗、共享中心税务人员。
 
-**推荐加载顺序**：
-1. `ccfts-intel-sta-cit-prepayment-rules` — CIT 预缴法规
-2. `ccfts-tax-all-cit-prepayment-filing` — 季度预缴 + 年度汇算清缴
-3. 如需子公司级：`ccfts-tax-subsidiary-cit-filing`
-4. `ccfts-fr-all-entity-type-rules` — 确认独立法人身份
+**先让 AI 读取这些 skill**：
 
-**用户需要提供**：
-- 是否为独立法人（是→需预缴 / 否→不单独预缴）
-- 是否有跨省施工项目（有→0.2% 预缴）
-- 当期利润表（累计数）
+1. `ccfts-intel-sta-vat-law-2026`：增值税法 2026 相关规则。
+2. `ccfts-tax-all-vat-general-filing`：一般计税。
+3. `ccfts-tax-all-vat-simplified-filing`：简易计税。
+4. `ccfts-tax-all-vat-cross-region-prepayment`：跨区域预缴。
+5. 如需子公司申报，再读取 `ccfts-tax-subsidiary-vat-filing`。
 
-**应输出**：
-- 季度预缴税额计算（含跨省项目 0.2% 抵减）
-- A105000 常见纳税调整项目清单
-- 安全生产费的税会差异调增/调减
-- 研发费用加计扣除提示（如适用）
+**你要提供**：
 
-**必须人工复核**：
-- 安全生产费：本年计提未使用部分是否已纳税调增？
-- 资产减值准备是否已纳税调增？
-- 跨省项目 0.2% 预缴是否足额？
-- 小型微利企业 5% 优惠是否可享受（资产总额 ≤ 5000 万是主要门槛）？
+- 项目所在地和机构所在地。
+- 纳税人身份：一般纳税人或小规模纳税人。
+- 合同类型：纯施工、清包工、甲供、EPC、PPP 等。
+- 合同日期、开票、收款、结算、分包扣除资料。
 
----
+**希望 AI 输出**：
 
-### 场景 4：做项目盈利 / 现金流分析
-
-**适用**：项目部 / 工程公司经营分析人员 / AI agent
-
-**推荐加载顺序**：
-1. `ccfts-anlys-project-unit-profitability` — 项目盈利能力分析
-2. `ccfts-anlys-project-unit-cashflow` — 项目现金流分析
-3. `ccfts-anlys-all-budget-variance` — 预算偏差分析方法
-4. `ccfts-mgmt-project-unit-cost-control` — 责任成本控制
-5. `ccfts-acct-all-contract-cost` — 合同履约成本归集
-6. `ccfts-acct-enterprise-contract-cost` — 预计总成本/亏损合同
-
-**用户需要提供**：
-- 项目责任成本预算
-- 实际成本数据（人工/材料/机械/分包/间接费）
-- 累计收款/付款记录
-- 累计确认收入数据
-
-**应输出**：
-- 毛利率趋势分析（月度追踪）
-- 各成本项偏差分析（量差 + 价差）
-- 红黄绿灯预警
-- 项目营业收现率
-- 垫资比例
-- 亏损项目清单 + 预计损失评估
+- 是否跨区域施工。
+- 适用一般计税、简易计税或无法判断。
+- 预缴税额测算和附加税费提示。
+- 缺失信息、地方口径风险、人工复核清单。
 
 **必须人工复核**：
-- 成本偏差的根因是量差还是价差？（不同对策）
-- 垫资比例是否在安全范围内（< 20%）？
-- "已完工未结算"挂账周期是否过长？
-- 是否有未计提的亏损合同预计负债？
 
----
+- 合同事实是否支持简易计税。
+- 项目所在地税务机关是否有特殊要求。
+- 分包扣除凭证是否合规。
+- 申报结果是否经过税务岗确认。
 
-### 场景 5：处理质保金 / 竣工结算
+### 场景 3：判断企业所得税预缴和汇算风险
 
-**适用**：项目部 / 工程公司商务+财务 / AI agent
+**适合**：子公司、工程局、工程公司财务和税务人员。
 
-**推荐加载顺序**：
-1. `ccfts-fr-all-retention-money` — 质保金完整流程（确认→持有→到期→回收）
-2. `ccfts-acct-enterprise-quality-guarantee` — 质保金分录实操
-3. `ccfts-fr-all-final-account-settlement` — 竣工结算五阶段流程
-4. `ccfts-mgmt-project-unit-collection-clear-arrears` — 清收清欠（如需催收）
+**先让 AI 读取这些 skill**：
 
-**用户需要提供**：
-- 施工合同质保金条款（比例、缺陷责任期）
-- 竣工结算书（送审金额）
-- 审计报告（审定金额、审减明细）
-- 应收账款台账（如需催收）
+1. `ccfts-intel-sta-cit-prepayment-rules`：企业所得税预缴规则。
+2. `ccfts-tax-all-cit-prepayment-filing`：季度预缴和年度汇算。
+3. `ccfts-tax-subsidiary-cit-filing`：子公司级申报。
+4. `ccfts-fr-all-entity-type-rules`：确认是否为独立法人。
 
-**应输出**：
-- 质保金四阶段确认分录
-- 审减争议处理建议（接受/协商/争议）
-- 收入调整分录（审定金额 vs 累计确认收入）
-- 合同资产→应收账款转换时点
-- 逾期质保金催收策略
+**你要提供**：
+
+- 是否为独立法人。
+- 当期利润表或利润测算。
+- 是否有跨省施工项目。
+- 安全生产费、资产减值、研发费用等纳税调整资料。
+
+**希望 AI 输出**：
+
+- 是否需要独立预缴。
+- 季度预缴测算思路。
+- 常见纳税调整清单。
+- 汇算清缴风险提示和人工复核清单。
 
 **必须人工复核**：
-- 质保金扣留比例是否 ≤ 3%？
-- 争议项可收回性评估是否合理？有无需单项计提减值的？
-- VAT：审减后是否及时开具红字发票？
-- 竣工结算拖延的原因和对策是否明确？
 
----
+- 是否符合企业所得税优惠条件。
+- 安全生产费、减值准备等税会差异是否准确。
+- 跨省项目预缴是否足额。
+
+### 场景 4：做项目经营分析、现金流分析和亏损预警
+
+**适合**：项目财务、项目经理部、商务经营人员、公司经营分析岗。
+
+**先让 AI 读取这些 skill**：
+
+1. `ccfts-anlys-project-unit-profitability`：项目盈利能力分析。
+2. `ccfts-anlys-project-unit-cashflow`：现金流分析。
+3. `ccfts-anlys-all-budget-variance`：预算偏差分析。
+4. `ccfts-mgmt-project-unit-cost-control`：责任成本控制。
+5. `ccfts-acct-all-contract-cost`：合同履约成本归集。
+6. `ccfts-acct-enterprise-contract-cost`：预计总成本和亏损合同。
+
+**你要提供**：
+
+- 责任成本预算。
+- 实际成本、收入、结算、收款、付款资料。
+- 已完工未结算、已结算未收款、分包结算等资料。
+
+**希望 AI 输出**：
+
+- 收入、成本、毛利、现金流、垫资、两金的分析框架。
+- 预算偏差和异常项。
+- 亏损风险、回款风险、下一步动作建议。
+
+**必须人工复核**：
+
+- 成本数据是否完整。
+- 偏差原因是量差、价差、范围变化还是管理责任。
+- 亏损合同是否需要正式计提预计损失。
+
+### 场景 5：处理质保金、竣工结算和清收清欠
+
+**适合**：项目部、商务、财务、清收清欠人员。
+
+**先让 AI 读取这些 skill**：
+
+1. `ccfts-fr-all-retention-money`：质保金处理。
+2. `ccfts-acct-enterprise-quality-guarantee`：质保金会计处理。
+3. `ccfts-fr-all-final-account-settlement`：竣工结算流程。
+4. `ccfts-mgmt-project-unit-collection-clear-arrears`：清收清欠。
+
+**你要提供**：
+
+- 合同质保金条款。
+- 竣工结算资料、审计审定资料、审减明细。
+- 应收账款、合同资产、质保金台账。
+- 已催收记录和责任部门。
+
+**希望 AI 输出**：
+
+- 质保金扣留、到期、回收和风险清单。
+- 竣工结算差异和收入调整提示。
+- 清收清欠分层清单和下一步动作。
+
+**必须人工复核**：
+
+- 质保金比例和缺陷责任期是否符合合同和法规。
+- 审减争议是否已经形成正式依据。
+- 红字发票、收入调整、坏账判断是否经过专业确认。
 
 ### 场景 6：做合并报表或集团层面分析
 
-**适用**：集团财务 / 上市公司合并岗 / AI agent
+**适合**：集团财务、合并岗、上市公司财务、总部经营分析岗。
 
-**推荐加载顺序**：
-1. `ccfts-fr-all-consolidation-workflow` — 合并报表编制工作流
-2. `ccfts-fr-all-consolidation-report` — 合并抵销分录 + PPP 合并处理
-3. `ccfts-intel-mof-cas33-consolidation` — CAS 33 法规要点
-4. `ccfts-anlys-soe-group-kpi-dashboard` — 集团经营看板
-5. `ccfts-anlys-soe-group-two-funds-analysis` — "两金"分析
-6. `ccfts-mgmt-soe-group-cash-pooling` — 资金池
-7. `ccfts-mgmt-soe-group-budget-approval` — 全面预算（如需）
+**先让 AI 读取这些 skill**：
 
-**用户需要提供**：
-- 母公司 + 各子公司单户 TB
-- 合并范围清单（含持股比例、控制判断依据）
-- 内部往来/内部交易明细
-- PPP 项目公司清单
+1. `ccfts-fr-all-consolidation-workflow`：合并报表工作流。
+2. `ccfts-fr-all-consolidation-report`：合并抵销。
+3. `ccfts-intel-mof-cas33-consolidation`：企业会计准则第 33 号。
+4. `ccfts-anlys-soe-group-kpi-dashboard`：集团经营看板。
+5. `ccfts-anlys-soe-group-two-funds-analysis`：两金分析。
+6. `ccfts-mgmt-soe-group-cash-pooling`：资金池。
 
-**应输出**：
-- 合并范围判断（控制三要素逐项评估）
-- 合并工作底稿（汇总+抵销借/贷=合并数）
-- 5 步标准抵销分录（权益/内部往来/内部交易/现金流/债券）
-- PPP 项目公司合并 vs 不合并的影响对比
-- 合并层面"两金"和资产负债率
+**你要提供**：
+
+- 母公司和子公司单户数据。
+- 合并范围清单。
+- 持股比例、控制判断依据。
+- 内部往来、内部交易和项目公司资料。
+
+**希望 AI 输出**：
+
+- 合并范围判断清单。
+- 抵销分录思路。
+- 两金、资产负债率、经营指标分析。
+- 需要人工确认的重大事项。
 
 **必须人工复核**：
-- 合并范围变更是否有正当商业理由（不是规避考核）？
-- 内部往来是否全额抵销（3001 在合并层面 = 0）？
-- PPP 项目公司是否按国资委要求原则性合并？
-- 少数股东权益/损益计算是否正确？
-- 合并层面"一利五率"是否已重算？
 
----
+- 合并范围变更是否合理。
+- 内部往来是否全额抵销。
+- 项目公司是否需要纳入合并范围。
+- 少数股东权益和损益是否正确。
+
+## 每次使用都要问 AI 的 5 个问题
+
+你可以把下面这段复制给 AI：
+
+```text
+请使用 CCFTS 的相关 skill 辅助处理本次资料。
+
+输出前请先回答：
+1. 你判断本次主体是什么？依据是什么？
+2. 你还缺哪些资料？
+3. 哪些结论是确定的，哪些只是推断？
+4. 哪些风险必须人工复核？
+5. 哪些内容不能用于正式报送或申报？
+```
 
 ## 人工复核总则
 
-以上所有场景的 AI 输出均需人工复核后方可用于正式报送或决策。详见：
-- `docs/manual-review-template.md` — 结构化复核清单
-- `docs/evidence-levels.md` — 可信度分级说明
+所有场景的 AI 输出都必须人工复核。尤其是税务申报、审计资料、监管报送、财务报告、融资、招投标和重大经营决策，不能直接使用 AI 结论。
+
+更多复核工具见：
+
+- [docs/manual-review-template.md](docs/manual-review-template.md)：人工复核模板。
+- [docs/evidence-levels.md](docs/evidence-levels.md)：可信度分级。
+- [docs/validation-plan.md](docs/validation-plan.md)：验证计划。
 
 ## 快速索引
 
-全部技能的场景路由详见：`skills/foundation/ccfts-all-skill-index.md`
+全部 skill 的技术索引见 [skills/README.md](skills/README.md) 和 `skills/foundation/ccfts-all-skill-index.md`。
 
 ## 免责声明
 
-本工具输出仅用于辅助分析，不替代持证 CPA / 税务师 / 企业内部审批流程。所有决策责任由使用者承担。
+本项目仅用于辅助分析、资料整理、检查清单生成和 AI 工作流组织，不构成法律、税务、审计、会计、投资或合规意见。使用者必须结合最新法规、地方口径和企业制度进行人工复核。

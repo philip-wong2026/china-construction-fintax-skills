@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 先看常见问题
+    url: https://github.com/philip-wong2026/china-construction-fintax-skills/blob/main/docs/faq.md
+    about: 如果你第一次使用 CCFTS，建议先看 FAQ 和 10 分钟上手。

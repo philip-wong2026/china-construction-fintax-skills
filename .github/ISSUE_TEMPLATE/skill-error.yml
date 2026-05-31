@@ -1,0 +1,43 @@
+name: 报告 skill 错误
+description: 指出某个 skill、场景包或文档中的规则错误、表述错误或适用范围问题
+title: "[规则错误] "
+labels: ["bug", "skill"]
+body:
+  - type: input
+    id: file
+    attributes:
+      label: 涉及文件
+      description: 例如 skills/tax/_base/xxx.md 或 agent-packs/doubao/xxx.md。
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 说明哪里不准确、容易误导或不适用。
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: 建议改法
+      description: 你建议怎么改。
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 依据来源
+      description: 可填写法规、准则、企业实务经验、地方口径等。不要上传未授权内部资料。
+    validations:
+      required: false
+  - type: dropdown
+    id: impact
+    attributes:
+      label: 影响程度
+      options:
+        - 高：可能导致错误财税结论
+        - 中：可能导致误解或遗漏
+        - 低：文字表述或格式问题
+    validations:
+      required: true

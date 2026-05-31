@@ -1,0 +1,47 @@
+name: 提交脱敏案例
+description: 提供可公开讨论的施工企业财税或项目管理脱敏案例
+title: "[脱敏案例] "
+labels: ["case", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请不要提交未脱敏的企业名称、项目名称、税号、合同编号、银行账号、人名、真实敏感金额等信息。
+  - type: input
+    id: scenario
+    attributes:
+      label: 场景名称
+      description: 例如：增值税跨区域预缴、清收清欠、质保金到期回收、项目快报资料检查。
+    validations:
+      required: true
+  - type: textarea
+    id: materials
+    attributes:
+      label: 已脱敏资料清单
+      description: 说明你能提供哪些资料，以及做了哪些脱敏处理。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 希望 AI 完成什么
+      description: 说明你希望 CCFTS 帮助 AI 输出什么。
+    validations:
+      required: true
+  - type: textarea
+    id: review
+    attributes:
+      label: 人工复核发现
+      description: 如果已经人工复核，请说明哪些输出有用、哪些有错、哪些缺失。
+    validations:
+      required: false
+  - type: dropdown
+    id: public-demo
+    attributes:
+      label: 是否允许整理为公开 demo
+      options:
+        - 可以，已确认脱敏
+        - 暂不可以，只供讨论
+        - 不确定，需要维护者协助判断
+    validations:
+      required: true
