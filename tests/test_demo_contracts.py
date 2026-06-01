@@ -35,7 +35,13 @@ REQUIRED_DEMO_FILES = {
         "input/project-info.csv",
         "expected/prepayment-calculation.csv",
     ],
+    "demo-collection-clear-arrears": [
+        "input/collection-ledger.csv",
+        "expected/collection-priority.csv",
+    ],
 }
+
+COLLECTION_RISK_LEVELS = {"黑色", "红色", "橙色", "黄色", "绿色"}
 
 
 def _load_amounts(csv_path):
@@ -86,12 +92,76 @@ def _check_vat_expected(demo_dir, errors):
     if not total_row or not detail_rows:
         errors.append(f"{demo_dir.name}: VAT expected missing detail rows or total row")
         return
-    vat_sum = sum(float(r["预缴VAT(万元)"]) for r in detail_rows)
+    vat_sum = sum(float(r["预缴增值税(万元)"]) for r in detail_rows)
     total_sum = sum(float(r["预缴合计(万元)"]) for r in detail_rows)
-    if round(float(total_row["预缴VAT(万元)"]) - vat_sum, 6) != 0:
+    if round(float(total_row["预缴增值税(万元)"]) - vat_sum, 6) != 0:
         errors.append(f"{demo_dir.name}: VAT total does not match detail VAT sum")
     if round(float(total_row["预缴合计(万元)"]) - total_sum, 6) != 0:
         errors.append(f"{demo_dir.name}: VAT grand total does not match detail sum")
+
+
+def _parse_float(row, column, demo_name, errors):
+    value = row.get(column)
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        project_id = row.get("项目编号", "unknown")
+        errors.append(f"{demo_name}: invalid number in {project_id} column {column}: {value!r}")
+        return None
+
+
+def _check_collection_expected(demo_dir, errors):
+    ledger_path = demo_dir / "input" / "collection-ledger.csv"
+    priority_path = demo_dir / "expected" / "collection-priority.csv"
+    if not ledger_path.exists() or not priority_path.exists():
+        return
+
+    with ledger_path.open(encoding="utf-8-sig", newline="") as f:
+        ledger_rows = list(csv.DictReader(f))
+    with priority_path.open(encoding="utf-8-sig", newline="") as f:
+        priority_rows = list(csv.DictReader(f))
+
+    if not ledger_rows or not priority_rows:
+        errors.append(f"{demo_dir.name}: collection ledger or priority output is empty")
+        return
+
+    ledger_ids = {r.get("项目编号") for r in ledger_rows if r.get("项目编号")}
+    priority_ids = {r.get("项目编号") for r in priority_rows if r.get("项目编号")}
+    if ledger_ids != priority_ids:
+        errors.append(
+            f"{demo_dir.name}: collection priority project IDs do not match ledger "
+            f"(missing={sorted(ledger_ids - priority_ids)}, extra={sorted(priority_ids - ledger_ids)})"
+        )
+
+    try:
+        priorities = [int(r["优先序"]) for r in priority_rows]
+    except (KeyError, ValueError) as exc:
+        errors.append(f"{demo_dir.name}: invalid collection priority sequence ({exc})")
+        priorities = []
+    if priorities and priorities != list(range(1, len(priority_rows) + 1)):
+        errors.append(f"{demo_dir.name}: collection priority sequence is not 1..N")
+
+    for row in ledger_rows:
+        balance = _parse_float(row, "应收账款余额(万元)", demo_dir.name, errors)
+        not_due = _parse_float(row, "未到期(万元)", demo_dir.name, errors)
+        overdue = _parse_float(row, "已到期未付(万元)", demo_dir.name, errors)
+        retention = _parse_float(row, "质保金(万元)", demo_dir.name, errors)
+        if None in (balance, not_due, overdue, retention):
+            continue
+        if round(balance - not_due - overdue - retention, 6) != 0:
+            errors.append(
+                f"{demo_dir.name}: collection balance mismatch for {row.get('项目编号')} "
+                f"(balance={balance}, not_due+overdue+retention={not_due + overdue + retention})"
+            )
+
+    for row in priority_rows:
+        risk = row.get("风险分层")
+        if risk not in COLLECTION_RISK_LEVELS:
+            errors.append(f"{demo_dir.name}: invalid risk level for {row.get('项目编号')}: {risk!r}")
+        for column in ("建议动作", "升级路径", "人工复核事项"):
+            if not row.get(column):
+                errors.append(f"{demo_dir.name}: missing {column} for {row.get('项目编号')}")
+
 
 def run():
     if not EXAMPLES_DIR.exists():
@@ -122,6 +192,7 @@ def run():
 
         _check_balance_sheet(demo, errors)
         _check_vat_expected(demo, errors)
+        _check_collection_expected(demo, errors)
 
         if not any(e.startswith(demo_name) for e in errors):
             print(f"  OK  {demo_name}")

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCFTS 背景包生成器</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --border: #e1e4e8;
+    --text: #1a1a2e;
+    --text-secondary: #5a6070;
+    --text-hint: #8b919e;
+    --primary: #1e5fb4;
+    --primary-hover: #164a8f;
+    --primary-light: #e8f0fe;
+    --danger: #c0392b;
+    --danger-light: #fdecea;
+    --warning: #e67e22;
+    --warning-light: #fef5e7;
+    --success: #27ae60;
+    --success-light: #eafaf1;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 32px 20px 24px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Layout: two columns on wide screens */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon { font-size: 18px; }
+
+  /* Form elements */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-hint);
+    font-weight: 400;
+  }
+
+  .field input[type="text"],
+  .field input[type="date"],
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: #fafbfc;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30,95,180,0.12);
+    background: #fff;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 64px;
+  }
+  .field select[multiple] {
+    min-height: 100px;
+  }
+
+  /* Checkbox group */
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    background: #fafbfc;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .checkbox-group label:hover { border-color: var(--primary); background: var(--primary-light); }
+  .checkbox-group input[type="checkbox"] { accent-color: var(--primary); width: 14px; height: 14px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    width: 100%;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-copy {
+    background: var(--success);
+    color: #fff;
+  }
+  .btn-copy:hover { background: #219a52; }
+  .btn-clear {
+    background: #fff;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .btn-clear:hover { background: #f4f5f7; }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* Output area */
+  .output-area {
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 120px;
+    max-height: 640px;
+    overflow-y: auto;
+    color: var(--text);
+    font-family: "PingFang SC", "Microsoft YaHei", monospace;
+  }
+  .output-area:empty::after {
+    content: "填写左侧表单后点击「生成背景包」，结果会显示在这里。";
+    color: var(--text-hint);
+  }
+
+  /* Copy feedback */
+  .copy-feedback {
+    font-size: 13px;
+    color: var(--success);
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .copy-feedback.show { opacity: 1; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--text-hint);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Empty state hint for select */
+  select option[value=""] { color: var(--text-hint); }
+
+  /* Required star */
+  .required::after {
+    content: " *";
+    color: var(--danger);
+    font-weight: 400;
+  }
+
+  /* Section divider */
+  .section-hint {
+    font-size: 12px;
+    color: var(--text-hint);
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    background: #fafbfc;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="badge">本地工具 · 无需联网</span>
+    <h1>CCFTS 背景包生成器</h1>
+    <p>填写你的工作背景和本次任务信息，自动生成一份「使用者背景资料 + 给 AI 的启动提示词」。全部处理在你电脑上完成，不上传任何信息。</p>
+  </div>
+
+  <!-- Main layout: form left, output right -->
+  <div class="layout">
+
+    <!-- === LEFT COLUMN: FORM === -->
+    <div>
+
+      <!-- Card 1: 使用者身份 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">👤</span> 使用者身份</div>
+
+        <div class="field">
+          <label class="required" for="userRole">你的岗位</label>
+          <span class="hint">让 AI 知道你是谁，输出才会对口</span>
+          <select id="userRole">
+            <option value="">— 请选择 —</option>
+            <option value="项目财务">项目财务</option>
+            <option value="总部财务">总部财务（报表/税务/资金）</option>
+            <option value="共享中心">财务共享中心核算岗</option>
+            <option value="商务成本">商务/成本/合约</option>
+            <option value="项目经理">项目经理</option>
+            <option value="经营分析">经营分析岗</option>
+            <option value="清收清欠">清收清欠岗</option>
+            <option value="审计">内部审计</option>
+            <option value="管理层">管理层（班子）</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="aiRole">你希望 AI 扮演什么角色</label>
+          <span class="hint">例如：财税资料整理助手 / 快报检查助手 / 风险排查助手</span>
+          <input type="text" id="aiRole" placeholder="财税资料检查与风险提示助手">
+        </div>
+      </div>
+
+      <!-- Card 2: 单位与项目背景 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🏢</span> 单位与项目背景</div>
+
+        <div class="field">
+          <label class="required" for="entityLevel">单位层级</label>
+          <span class="hint">同一个"项目"，项目部、项目公司、分公司的口径完全不同</span>
+          <select id="entityLevel">
+            <option value="">— 请选择 —</option>
+            <option value="项目部（非法人，施工总承包）">项目部（非法人，施工总承包）</option>
+            <option value="项目公司（独立法人，投资管理类）">项目公司（独立法人，投资管理类）</option>
+            <option value="总包部（代局指）">总包部（代局指）</option>
+            <option value="分公司（非法人）">分公司（非法人）</option>
+            <option value="子公司（独立法人）">子公司（独立法人）</option>
+            <option value="工程局/二级公司">工程局/二级公司</option>
+            <option value="集团总部">集团总部（合并层）</option>
+            <option value="SPV/PPP项目公司">SPV / PPP 项目公司</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="isLegalEntity">是否独立法人</label>
+          <select id="isLegalEntity">
+            <option value="">— 请选择 —</option>
+            <option value="是，独立法人，独立纳税">是，独立法人，独立纳税</option>
+            <option value="否，非法人分支机构">否，非法人分支机构</option>
+            <option value="否，内部项目部">否，内部项目部</option>
+            <option value="不确定">不确定</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="projectType">工程类型</label>
+          <select id="projectType">
+            <option value="">— 请选择 —</option>
+            <option value="铁路">铁路</option>
+            <option value="公路">公路</option>
+            <option value="市政">市政</option>
+            <option value="城轨/地铁">城轨/地铁</option>
+            <option value="房建">房建</option>
+            <option value="水利">水利</option>
+            <option value="港口">港口</option>
+            <option value="矿山">矿山</option>
+            <option value="机电安装">机电安装</option>
+            <option value="EPC总承包">EPC 总承包</option>
+            <option value="PPP/BOT">PPP / BOT</option>
+            <option value="专项债项目">专项债项目</option>
+            <option value="投资类">投资类</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="projectStage">项目阶段</label>
+          <select id="projectStage">
+            <option value="">— 请选择 —</option>
+            <option value="投标阶段">投标阶段</option>
+            <option value="在建">在建</option>
+            <option value="竣工结算">竣工结算</option>
+            <option value="质保期">质保期</option>
+            <option value="清欠期">清欠期</option>
+            <option value="已完结">已完结</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="contractType">合同类型</label>
+          <select id="contractType">
+            <option value="">— 请选择 —</option>
+            <option value="施工总承包">施工总承包</option>
+            <option value="EPC总承包">EPC 总承包</option>
+            <option value="PPP">PPP</option>
+            <option value="专业分包">专业分包</option>
+            <option value="清包工">清包工</option>
+            <option value="甲供工程">甲供工程</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="projectLocation">项目所在地</label>
+          <input type="text" id="projectLocation" placeholder="例如：某省某市（脱敏）">
+        </div>
+
+        <div class="field">
+          <label for="orgLocation">机构所在地</label>
+          <input type="text" id="orgLocation" placeholder="例如：某省某市（脱敏）">
+        </div>
+      </div>
+
+      <!-- Card 3: 本次任务 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📋</span> 本次任务</div>
+
+        <div class="field">
+          <label class="required" for="taskType">任务类型</label>
+          <span class="hint">告诉 AI 这次要帮你做什么</span>
+          <select id="taskType" multiple size="5">
+            <option value="月度快报资料检查">月度快报资料检查</option>
+            <option value="增值税跨区域预缴判断">增值税跨区域预缴判断</option>
+            <option value="企业所得税预缴/汇算风险">企业所得税预缴/汇算风险</option>
+            <option value="清收清欠台账分析">清收清欠台账分析</option>
+            <option value="分包结算风险检查">分包结算风险检查</option>
+            <option value="竣工结算财税复核">竣工结算财税复核</option>
+            <option value="质保金到期回收检查">质保金到期回收检查</option>
+            <option value="项目经营分析/亏损预警">项目经营分析/亏损预警</option>
+            <option value="政府补贴/专项债/EPC财税处理">政府补贴/专项债/EPC 财税处理</option>
+            <option value="合并报表抵销检查">合并报表抵销检查</option>
+            <option value="生成正式报告/情况说明初稿">生成正式报告/情况说明初稿</option>
+            <option value="其他">其他（请在备注中说明）</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="required" for="reportPeriod">报表或分析期间</label>
+          <input type="text" id="reportPeriod" placeholder="例如：2026年5月">
+        </div>
+
+        <div class="field">
+          <label for="outputPurpose">输出用途</label>
+          <select id="outputPurpose">
+            <option value="">— 请选择 —</option>
+            <option value="内部测算/自查">内部测算 / 自查</option>
+            <option value="上报前检查">上报前检查</option>
+            <option value="汇报材料准备">汇报材料准备</option>
+            <option value="部门复核">部门复核</option>
+            <option value="审计配合">审计配合</option>
+            <option value="税务申报前检查">税务申报前检查</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="outputFormat">期望输出格式</label>
+          <select id="outputFormat">
+            <option value="">— 请选择 —</option>
+            <option value="检查清单">检查清单</option>
+            <option value="表格">表格</option>
+            <option value="分析报告初稿">分析报告初稿</option>
+            <option value="邮件/情况说明">邮件 / 情况说明</option>
+            <option value="复核意见">复核意见</option>
+            <option value="不限格式">不限格式</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Card 4: 已提供资料 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📎</span> 已提供资料</div>
+
+        <div class="section-hint">勾选你准备上传或已提供给 AI 的资料。AI 会据此判断还缺什么。</div>
+
+        <div class="field">
+          <label>财务资料</label>
+          <div class="checkbox-group" id="docsFinance">
+            <label><input type="checkbox" value="科目余额表"> 科目余额表</label>
+            <label><input type="checkbox" value="利润表"> 利润表</label>
+            <label><input type="checkbox" value="资产负债表"> 资产负债表</label>
+            <label><input type="checkbox" value="现金流量表"> 现金流量表</label>
+            <label><input type="checkbox" value="应收账款台账"> 应收账款台账</label>
+            <label><input type="checkbox" value="合同资产台账"> 合同资产台账</label>
+            <label><input type="checkbox" value="应付账款台账"> 应付账款台账</label>
+            <label><input type="checkbox" value="回款台账"> 回款台账</label>
+            <label><input type="checkbox" value="成本台账"> 成本台账</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>合同与结算资料</label>
+          <div class="checkbox-group" id="docsContract">
+            <label><input type="checkbox" value="施工合同"> 施工总承包合同</label>
+            <label><input type="checkbox" value="分包合同"> 分包合同</label>
+            <label><input type="checkbox" value="结算单"> 结算单</label>
+            <label><input type="checkbox" value="竣工结算资料"> 竣工结算资料</label>
+            <label><input type="checkbox" value="发票清单"> 发票清单</label>
+            <label><input type="checkbox" value="催收记录"> 催收记录</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>其他说明</label>
+          <textarea id="docsOther" placeholder="如有其他已提供资料，请在此说明。例如：企业快报模板、内部管理报表格式……"></textarea>
+        </div>
+      </div>
+
+      <!-- Card 5: 脱敏边界与安全 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🔒</span> 脱敏边界与安全</div>
+
+        <div class="section-hint">重要：以下选项默认均为「不允许」。除非你已确认资料已脱敏。</div>
+
+        <div class="field">
+          <label>敏感信息处理</label>
+          <div class="checkbox-group" id="privacy">
+            <label><input type="checkbox" value="资料已脱敏（无真实单位名称）"> 资料已脱敏（无真实单位名称）</label>
+            <label><input type="checkbox" value="金额已脱敏/比例化"> 金额已脱敏/比例化</label>
+            <label><input type="checkbox" value="无身份证号/银行账号/纳税识别号"> 无身份证号/银行账号/纳税识别号</label>
+            <label><input type="checkbox" value="无合同相对方真实名称"> 无合同相对方真实名称</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="privacyNote">额外脱敏要求</label>
+          <textarea id="privacyNote" placeholder="如有其他脱敏要求，请在此说明。例如：不得输出项目具体地址、不得输出业主名称……"></textarea>
+        </div>
+
+        <div class="field">
+          <label>AI 不得生成的结论（默认已含通用禁止项）</label>
+          <div class="checkbox-group" id="forbidden">
+            <label><input type="checkbox" value="纳税申报数据"> 纳税申报数据</label>
+            <label><input type="checkbox" value="审计意见"> 审计意见</label>
+            <label><input type="checkbox" value="法律责任结论"> 法律责任结论</label>
+            <label><input type="checkbox" value="正式报送数据"> 正式报送数据</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: 企业口径 -->
+      <div class="card">
+        <div class="card-title"><span class="icon">⚙️</span> 企业口径（选填）</div>
+
+        <div class="section-hint">如果你知道本企业的特殊口径，请写出来。不知道就留空，AI 会按通用行业规则处理并提醒你确认。</div>
+
+        <div class="field">
+          <label for="amountUnit">金额单位</label>
+          <input type="text" id="amountUnit" placeholder="例如：万元">
+        </div>
+
+        <div class="field">
+          <label for="revenueMethod">收入确认口径</label>
+          <input type="text" id="revenueMethod" placeholder="例如：投入法/产出法/开票确认/收款确认">
+        </div>
+
+        <div class="field">
+          <label for="costMethod">成本归集口径</label>
+          <input type="text" id="costMethod" placeholder="例如：直接成本+现场经费">
+        </div>
+
+        <div class="field">
+          <label for="internalRule">内部往来处理规则</label>
+          <input type="text" id="internalRule" placeholder="例如：内部单位之间不确认收入/内部往来期末对账">
+        </div>
+
+        <div class="field">
+          <label for="otherRule">其他特殊规则</label>
+          <textarea id="otherRule" placeholder="如果有本企业特有的管理制度或口径，请在此说明。"></textarea>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="card">
+        <button class="btn btn-primary" onclick="generate()">
+          📄 生成背景包
+        </button>
+        <div class="btn-row">
+          <button class="btn btn-clear" onclick="clearForm()">清空表单</button>
+          <span style="font-size:12px;color:var(--text-hint);align-self:center;margin-left:auto;">
+            全部处理在本机完成，不上传任何信息
+          </span>
+        </div>
+      </div>
+
+    </div><!-- /left column -->
+
+    <!-- === RIGHT COLUMN: OUTPUT === -->
+    <div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">📝</span> 生成的背景包</div>
+
+        <div class="section-hint">
+          生成的内容分为两部分：<strong>使用者背景资料</strong>（给 AI 看你是谁、什么单位、要做什么）和 <strong>给 AI 的启动提示词</strong>（可直接复制使用）。
+        </div>
+
+        <div class="output-area" id="output"></div>
+
+        <div class="btn-row">
+          <button class="btn btn-copy" id="btnCopy" onclick="copyOutput()" disabled>
+            📋 一键复制
+          </button>
+          <span class="copy-feedback" id="copyFeedback">✅ 已复制到剪贴板</span>
+          <button class="btn btn-clear" onclick="downloadOutput()" style="margin-left:auto;" id="btnDownload" disabled>
+            💾 保存为文件
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick tips -->
+      <div class="card">
+        <div class="card-title"><span class="icon">💡</span> 使用提示</div>
+        <ol style="font-size:13px;color:var(--text-secondary);padding-left:20px;line-height:2;">
+          <li>生成后点击「一键复制」，粘贴到 AI 对话框。</li>
+          <li>再上传你准备好的脱敏资料。</li>
+          <li>如果 AI 说"不确定某些信息"，请回到本页补充表单，重新生成。</li>
+          <li>每次换场景使用时，建议重新生成新的背景包。</li>
+          <li>本工具不需要联网，所有处理在你电脑上完成。</li>
+        </ol>
+      </div>
+
+    </div><!-- /right column -->
+
+  </div><!-- /layout -->
+
+  <div class="footer">
+    CCFTS 中国施工企业财税技能包 · 背景包生成器 ·
+    <a href="../../README.md">返回 CCFTS 主页</a>
+    ·
+    <a href="../../docs/nontechnical-user-guide.md">非技术用户指南</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  if (el.type === 'select-multiple' || (el.tagName === 'SELECT' && el.multiple)) {
+    return Array.from(el.selectedOptions).map(o => o.value).filter(Boolean);
+  }
+  return el.value.trim();
+}
+
+function getChecked(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return [];
+  return Array.from(container.querySelectorAll('input[type="checkbox"]:checked'))
+    .map(cb => cb.value);
+}
+
+function generate() {
+  // Collect all values
+  const userRole = getVal('userRole');
+  const aiRole = getVal('aiRole') || '财税资料检查与风险提示助手';
+  const entityLevel = getVal('entityLevel');
+  const isLegalEntity = getVal('isLegalEntity');
+  const projectType = getVal('projectType');
+  const projectStage = getVal('projectStage');
+  const contractType = getVal('contractType');
+  const projectLocation = getVal('projectLocation');
+  const orgLocation = getVal('orgLocation');
+  const taskTypes = getVal('taskType');
+  const reportPeriod = getVal('reportPeriod');
+  const outputPurpose = getVal('outputPurpose');
+  const outputFormat = getVal('outputFormat');
+  const docsFinance = getChecked('docsFinance');
+  const docsContract = getChecked('docsContract');
+  const docsOther = getVal('docsOther');
+  const privacyChecks = getChecked('privacy');
+  const privacyNote = getVal('privacyNote');
+  const forbiddenChecks = getChecked('forbidden');
+  const amountUnit = getVal('amountUnit');
+  const revenueMethod = getVal('revenueMethod');
+  const costMethod = getVal('costMethod');
+  const internalRule = getVal('internalRule');
+  const otherRule = getVal('otherRule');
+
+  // Validate minimum required fields
+  if (!userRole) {
+    alert('请先选择「你的岗位」。');
+    document.getElementById('userRole').focus();
+    return;
+  }
+  if (!entityLevel) {
+    alert('请先选择「单位层级」。');
+    document.getElementById('entityLevel').focus();
+    return;
+  }
+  if (!taskTypes || taskTypes.length === 0) {
+    alert('请至少选择一项「任务类型」。');
+    document.getElementById('taskType').focus();
+    return;
+  }
+  if (!reportPeriod) {
+    alert('请填写「报表或分析期间」。');
+    document.getElementById('reportPeriod').focus();
+    return;
+  }
+  if (!privacyChecks || privacyChecks.length === 0) {
+    const ok = confirm('你还没有勾选任何脱敏确认项。\n\n强烈建议先脱敏再上传资料。\n\n如果资料确实已脱敏，请点「取消」后先勾选脱敏边界。\n如果确认跳过，请点「确定」继续生成。');
+    if (!ok) return;
+  }
+
+  // Build output
+  let out = '';
+
+  out += '══════════════════════════════════════\n';
+  out += '  使用者背景资料\n';
+  out += '  （请连同脱敏资料一起提供给 AI）\n';
+  out += '══════════════════════════════════════\n\n';
+
+  out += '## 一、使用者身份\n\n';
+  out += `- 使用者岗位：${userRole}\n`;
+  out += `- 希望 AI 扮演的角色：${aiRole}\n`;
+  out += '- 是否具备财务/税务/工程管理专业判断能力：是（AI 输出仅供辅助，最终判断由人做出）\n';
+  out += '\n';
+
+  out += '## 二、单位与项目背景\n\n';
+  out += `- 单位层级：${entityLevel}\n`;
+  if (isLegalEntity) out += `- 是否独立法人：${isLegalEntity}\n`;
+  if (projectType) out += `- 工程类型：${projectType}\n`;
+  if (projectStage) out += `- 项目阶段：${projectStage}\n`;
+  if (contractType) out += `- 合同类型：${contractType}\n`;
+  if (projectLocation) out += `- 项目所在地：${projectLocation}\n`;
+  if (orgLocation) out += `- 机构所在地：${orgLocation}\n`;
+  out += '\n';
+
+  out += '## 三、本次任务\n\n';
+  out += `- 任务类型：${taskTypes.join('、')}\n`;
+  out += `- 报表或分析期间：${reportPeriod}\n`;
+  if (outputPurpose) out += `- 输出用途：${outputPurpose}\n`;
+  if (outputFormat) out += `- 期望输出格式：${outputFormat}\n`;
+  out += '\n';
+
+  out += '## 四、已提供资料\n\n';
+  if (docsFinance.length > 0) {
+    out += '财务资料：\n';
+    docsFinance.forEach(d => { out += `  - ${d}\n`; });
+  }
+  if (docsContract.length > 0) {
+    out += '合同与结算资料：\n';
+    docsContract.forEach(d => { out += `  - ${d}\n`; });
+  }
+  if (docsOther) {
+    out += `其他说明：${docsOther}\n`;
+  }
+  if (docsFinance.length === 0 && docsContract.length === 0 && !docsOther) {
+    out += '（未列出具体资料，请在提供资料时补充说明）\n';
+  }
+  out += '\n';
+
+  out += '## 五、脱敏与安全边界\n\n';
+  if (privacyChecks.length > 0) {
+    out += '已确认的脱敏措施：\n';
+    privacyChecks.forEach(p => { out += `  - ${p}\n`; });
+  }
+  if (privacyNote) {
+    out += `额外脱敏要求：${privacyNote}\n`;
+  }
+  out += '\n';
+  out += 'AI 不得生成的结论：\n';
+  out += '  - 正式税务申报数据\n';
+  out += '  - 正式审计意见\n';
+  out += '  - 法律责任最终结论\n';
+  out += '  - 可直接用于外部报送的正式报表\n';
+  forbiddenChecks.forEach(f => { out += `  - ${f}\n`; });
+  out += '\n';
+
+  if (amountUnit || revenueMethod || costMethod || internalRule || otherRule) {
+    out += '## 六、企业特殊口径\n\n';
+    if (amountUnit) out += `- 金额单位：${amountUnit}\n`;
+    if (revenueMethod) out += `- 收入确认口径：${revenueMethod}\n`;
+    if (costMethod) out += `- 成本归集口径：${costMethod}\n`;
+    if (internalRule) out += `- 内部往来处理：${internalRule}\n`;
+    if (otherRule) out += `- 其他特殊规则：${otherRule}\n`;
+    out += '\n';
+  }
+
+  out += '══════════════════════════════════════\n';
+  out += '  给 AI 的启动提示词\n';
+  out += '  （复制下面内容，作为给 AI 的第一条消息）\n';
+  out += '══════════════════════════════════════\n\n';
+
+  out += '```text\n';
+  out += '你现在使用 CCFTS 中国施工企业财税技能包。\n';
+  out += '\n';
+  out += '请先阅读上面的「使用者背景资料」，确认你理解以下信息：\n';
+  out += '\n';
+  out += `1. 使用者岗位：${userRole}\n`;
+  out += `2. 单位层级：${entityLevel}\n`;
+  if (isLegalEntity) out += `3. 是否独立法人：${isLegalEntity}\n`;
+  out += `${isLegalEntity ? '4' : '3'}. 本次任务：${taskTypes.join('、')}\n`;
+  out += `${isLegalEntity ? '5' : '4'}. 报表期间：${reportPeriod}\n`;
+  if (outputPurpose) out += `${isLegalEntity ? '6' : '5'}. 输出用途：${outputPurpose}\n`;
+  out += '\n';
+  out += '如果以上信息有不清楚的地方，请先向我确认，不要猜测。\n';
+  out += '\n';
+  out += '处理资料时请遵守以下原则：\n';
+  out += '\n';
+  out += '- 先判断资料是否完整，列出缺少哪些必要资料。\n';
+  out += '- 如果某个判断需要结合本企业制度才能确定，写"需结合本企业制度确认"。\n';
+  out += '- 如果某个结论依赖当地税务机关口径，写"需咨询当地税务机关"。\n';
+  out += '- 不确定的地方必须写"不确定"，不允许编造数据。\n';
+  out += '- 不允许直接给最终税务结论。\n';
+  out += '- 不允许把某个企业的特定口径当作全行业通用规则。\n';
+  out += '- 所有金额均为脱敏数据，仅用于演示计算逻辑。\n';
+  out += '\n';
+  out += '输出时请按以下结构组织：\n';
+  out += '\n';
+  out += '1. 你理解的背景摘要（确认你理解了使用者身份、主体类型和本次任务）\n';
+  out += '2. 资料缺口：还缺哪些资料才能做更完整的判断\n';
+  out += '3. 口径判断：基于现有资料的初步判断和依据\n';
+  out += '4. 风险点：哪些地方容易出错，哪些地方需要特别关注\n';
+  out += '5. 建议动作：接下来建议做什么，优先级如何\n';
+  out += '6. 必须人工复核的事项：哪些结论必须由人确认后才能使用\n';
+  out += '\n';
+
+  if (outputFormat && outputFormat !== '不限格式') {
+    out += `期望输出格式：${outputFormat}\n`;
+    out += '\n';
+  }
+
+  out += '如果本次需要生成正式报告（Word、PDF、情况说明、汇报材料），请按以下要求：\n';
+  out += '- 正文不使用技术术语、slug、文件路径、内部变量名。\n';
+  out += '- 不展示 AI 的内部推理过程。\n';
+  out += '- 不确定的结论前面加"初步判断："或"建议核实："。\n';
+  out += '- 受限于资料完整性的事项，前面加"基于现有资料："。\n';
+  out += '```\n';
+
+  // Display
+  document.getElementById('output').textContent = out;
+  document.getElementById('btnCopy').disabled = false;
+  document.getElementById('btnDownload').disabled = false;
+  document.getElementById('output').scrollTop = 0;
+
+  // Hide copy feedback
+  document.getElementById('copyFeedback').classList.remove('show');
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').textContent;
+  if (!text) return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const fb = document.getElementById('copyFeedback');
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      const fb = document.getElementById('copyFeedback');
+      fb.classList.add('show');
+      setTimeout(() => fb.classList.remove('show'), 2000);
+    } catch (e) {
+      alert('复制失败，请手动选中输出内容后按 Ctrl+C（Mac: Cmd+C）复制。');
+    }
+    document.body.removeChild(textarea);
+  });
+}
+
+function downloadOutput() {
+  const text = document.getElementById('output').textContent;
+  if (!text) return;
+
+  const now = new Date();
+  const ts = now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0') + '-' +
+    String(now.getHours()).padStart(2, '0') +
+    String(now.getMinutes()).padStart(2, '0');
+  const filename = `CCFTS-背景包-${ts}.txt`;
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+  function clearForm() {
+  if (!confirm('确定要清空所有已填写的内容吗？此操作不可撤销。')) return;
+
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('select').forEach(el => {
+      if (el.multiple) {
+        for (let i = 0; i < el.options.length; i++) {
+          el.options[i].selected = false;
+        }
+      } else {
+        el.selectedIndex = 0;
+      }
+    });
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  document.getElementById('output').textContent = '';
+  document.getElementById('btnCopy').disabled = true;
+  document.getElementById('btnDownload').disabled = true;
+  document.getElementById('copyFeedback').classList.remove('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
