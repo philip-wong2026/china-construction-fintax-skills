@@ -33,7 +33,7 @@
 
 能用，但建议用简化方式。
 
-不要让豆包一次读取全部 96 个 skill。建议上传一个场景包，例如：
+不要让豆包一次读取全部 97 个 skill。建议上传一个场景包，例如：
 
 - `agent-packs/doubao/flash-report.md`
 - `agent-packs/doubao/vat-prepayment.md`

@@ -34,6 +34,7 @@ triggers:
 | 任务场景 | 推荐加载的技能 |
 |---------|--------------|
 | 编制月度财务快报 | `ccfts-workflow-base` → `ccfts-fr-all-flash-report-workflow` → `ccfts-fr-all-entity-type-rules` → 对应层级覆盖 |
+| 生成正式 Word/PDF 报告正文 | 业务场景对应技能 → `ccfts-formal-word-output-format` |
 | 编制利润表 | `ccfts-fr-all-profit-statement` → `ccfts-fr-all-entity-type-rules` → 对应层级覆盖 |
 | 编制资产负债表 | `ccfts-fr-all-balance-sheet` → `ccfts-fr-all-entity-type-rules` → 对应层级覆盖 |
 | 判定主体类型 | `ccfts-fr-all-entity-type-rules` → 对应层级覆盖 |
@@ -127,6 +128,13 @@ triggers:
 | CIT 预缴规则 | `ccfts-intel-sta-cit-prepayment-rules` |
 | 建筑业资质体系 | `ccfts-intel-mohurd-qualification-system` |
 | 安全生产费计提标准 | `ccfts-intel-mohurd-safety-fund-rates` |
+
+## 输出格式类
+
+| 任务场景 | 推荐加载的技能 |
+|---------|--------------|
+| 中国中铁及所属单位/工程项目/项目总包部/项目公司相关正式 Word 材料 | `ccfts-formal-word-output-format` |
+| 通过 CCFTS 技能生成 Word、PDF、正式报告、请示、情况说明、汇报材料 | 业务场景对应技能 → `ccfts-formal-word-output-format` |
 
 ## 免责声明
 

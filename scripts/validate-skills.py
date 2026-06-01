@@ -122,7 +122,7 @@ def check_slug_pattern(name: str, relpath: str) -> list[str]:
 def check_file(filepath: Path) -> list[str]:
     """Validate a single skill file."""
     issues = []
-    relpath = str(filepath.relative_to(SKILLS_DIR))
+    relpath = filepath.relative_to(SKILLS_DIR).as_posix()
 
     if filepath.name in SKIP_FILES:
         return issues
@@ -209,7 +209,7 @@ def check_cross_references(all_files: list[Path], skippable_slugs: set) -> list[
         fm = parse_frontmatter(fp)
         if not fm:
             continue
-        relpath = str(fp.relative_to(SKILLS_DIR))
+        relpath = fp.relative_to(SKILLS_DIR).as_posix()
         for field in ("depends_on", "references"):
             deps = fm.get(field, [])
             if isinstance(deps, str):
