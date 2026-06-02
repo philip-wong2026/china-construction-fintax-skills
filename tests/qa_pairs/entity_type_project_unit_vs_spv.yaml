@@ -1,0 +1,14 @@
+skill_file: skills/financial-reporting/_base/ccfts-fr-all-entity-type-rules.md
+question: "如何区分项目部和项目公司主体口径？"
+must_contain:
+  - 主体类型
+  - 5801 合同结算
+  - Type B
+  - Type A
+  - 项目公司SPV
+  - 总包部/项目部
+  - 必须分别处理、分别编制快报
+must_not_contain:
+  - 项目部和项目公司可以合并判断
+  - 无需检查权益结构
+  - 通用企业口径即可

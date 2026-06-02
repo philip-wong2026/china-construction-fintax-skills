@@ -20,6 +20,15 @@ REQUIRED_DEMO_STRUCTURE = {
     "output": "dir",
 }
 
+MARKDOWN_DEMO_STRUCTURE = {
+    "README.md": "file",
+    "input-desensitized.md": "file",
+    "expected-output.md": "file",
+    "validation-log.md": "file",
+}
+
+MARKDOWN_ONLY_DEMOS = {"demo-receivables-collection"}
+
 REQUIRED_DEMO_FILES = {
     "demo-spv-flash-report": [
         "input/trial-balance.csv",
@@ -38,6 +47,11 @@ REQUIRED_DEMO_FILES = {
     "demo-collection-clear-arrears": [
         "input/collection-ledger.csv",
         "expected/collection-priority.csv",
+    ],
+    "demo-receivables-collection": [
+        "input-desensitized.md",
+        "expected-output.md",
+        "validation-log.md",
     ],
 }
 
@@ -176,7 +190,10 @@ def run():
     errors = []
     for demo in demos:
         demo_name = demo.name
-        for path, ptype in REQUIRED_DEMO_STRUCTURE.items():
+        required_structure = (
+            MARKDOWN_DEMO_STRUCTURE if demo_name in MARKDOWN_ONLY_DEMOS else REQUIRED_DEMO_STRUCTURE
+        )
+        for path, ptype in required_structure.items():
             full_path = demo / path
             if ptype == "file" and not full_path.is_file():
                 errors.append(f"{demo_name}: missing {path}")

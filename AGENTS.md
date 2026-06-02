@@ -1,2 +1,54 @@
-- Maintainer notes for the China Construction Enterprise Finance & Tax Skills project.
-- Keep changes scoped and follow the existing repository structure.
+# AGENTS.md
+
+本文件面向 Codex、OpenAI agent 及其他会读取仓库说明的 AI agent。
+
+## 项目定位
+
+china-construction-fintax-skills 是中国施工企业财税 AI 技能库。它是一套给 AI 使用的施工企业财税工作说明书，帮助 AI 在处理快报、税务、成本、合同、清欠、正式报告等任务时，先按施工企业业务口径检查，再交由人工复核。
+
+本项目不是财务软件，不是报税工具，不替代财务、税务、审计、法务或管理人员的专业判断。
+
+## 核心目录结构
+
+| 目录 | 用途 |
+|------|------|
+| `skills/` | 核心技能文件。按财务报告、税务、会计、管理、分析、监管知识等分类，供 AI 按场景读取。 |
+| `agent-packs/` | 给豆包、马维斯、Trae Solo 等普通 AI 工具使用的场景包。适合不懂代码用户直接上传。 |
+| `docs/` | 用户文档、快速上手、新手说明、背景包模板、提示词模板、人工复核模板和反馈说明。 |
+| `examples/` | 脱敏教学 demo，包含输入资料、期望输出和场景说明，用于试用和验证。 |
+| `mcp/` | MCP server 和高级接入说明，适合 Claude Desktop、Claude Code、Codex 等长期接入场景。 |
+| `tests/` | 项目自检脚本，检查 skill 文件结构、demo 合同、MCP 加载等基础质量。 |
+
+## Agent 操作顺序
+
+1. 先读 `START_HERE.md`，判断用户属于普通试用、业务场景处理、工具接入、贡献反馈还是开发维护。
+2. 根据任务选择入口：
+   - 普通用户试用：读 `docs/nontechnical-user-guide.md` 和 `docs/quick-start-10min.md`。
+   - 背景资料整理：读 `docs/user-context-template.md`，或使用 `tools/context-builder/index.html`。
+   - 具体业务处理：先读相关 `agent-packs/` 或 `examples/`，再按场景选择 `skills/`。
+   - 高级接入或开发维护：读 `docs/integrations/`、`mcp/`、`tests/`。
+3. 不要一次性加载全部 `skills/`。按场景选择最相关的 skill，再补充必要的基础 skill。
+4. 处理用户资料前，先判断资料是否完整，并列出资料缺口。
+5. 输出业务分析时，必须包含：
+   - 资料缺口；
+   - 口径判断；
+   - 风险点；
+   - 建议动作；
+   - 必须人工复核的事项。
+6. 如涉及正式文档输出，应先确认文种、用途、报送对象和格式要求，再生成正文。
+
+## 禁止事项
+
+- 不得直接输出正式纳税申报结论、审计结论、法律责任结论或投资决策结论。
+- 不得省略资料缺口提示；资料不足时必须明确写出“缺少哪些资料”和“哪些结论不能判断”。
+- 不得把 AI 推断写成确定事实。
+- 不得用通用企业口径替代施工企业口径；必须区分项目部、项目公司、分公司、子公司、集团总部等主体。
+- 不得忽略人工复核清单。任何财税、审计、法务、合同、清欠、报表、正式上报事项都必须提示人工复核。
+- 不得要求用户上传未脱敏敏感资料。应提醒用户先脱敏单位名称、合同相对方、真实金额、银行账号、身份证号、纳税识别号等信息。
+- 不得修改 `skills/` 目录，除非用户明确要求并说明修改范围。
+
+## 维护要求
+
+- 保持中文为主，必要技术术语可保留英文。
+- 变更应尽量局部、可验证，不做无关重构。
+- 修改后运行 `python3 scripts/validate-skills.py`，确认 0 issues。

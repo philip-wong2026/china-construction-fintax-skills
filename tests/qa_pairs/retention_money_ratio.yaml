@@ -1,0 +1,13 @@
+skill_file: skills/financial-reporting/_base/ccfts-fr-all-retention-money.md
+question: "施工合同质保金扣留比例应如何控制？"
+must_contain:
+  - 质保金
+  - 不得高于
+  - 3%
+  - 缺陷责任期
+  - 合同资产
+  - 质保金扣留比例是否符合 ≤3% 的法定上限
+must_not_contain:
+  - 质保金总预留比例可以高于 3%
+  - 可直接核销
+  - 无需人工复核

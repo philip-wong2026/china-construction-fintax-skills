@@ -1,0 +1,13 @@
+skill_file: skills/tax/_base/ccfts-tax-all-vat-cross-region-prepayment.md
+question: "跨区域施工项目如何判断是否需要预缴增值税？"
+must_contain:
+  - 跨区域涉税事项报告
+  - 项目所在地
+  - 机构所在地申报时抵减
+  - 一般计税（预征率 2%）
+  - 简易计税（预征率 3%）
+  - 分包款必须取得
+must_not_contain:
+  - 简易计税预征率是 2%
+  - 不需要办理跨区域涉税事项报告
+  - 附加税费按机构所在地税率计算
