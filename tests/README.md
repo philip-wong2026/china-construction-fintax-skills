@@ -22,7 +22,7 @@ python3 tests/test_demo_contracts.py
 - **无完整内容级自动化测试**：不逐条验证技能正文中的会计/税务规则是否正确
 - **Demo 仍是脱敏教学样例**：examples/ 中已有 input/expected，但尚未形成从 input 自动生成 output 并逐项比对的端到端回归
 - **MCP 客户端集成测试缺失**：本地 helper/parser 可测，完整 MCP server 仍需在 Claude Desktop / Cursor / Codex 等客户端逐工具调用
-- **测试覆盖的技能数量**：`test_mcp_loading.py` 仅抽样覆盖 5 个关键 slug，非全部 96 个
+- **测试覆盖的技能数量**：`test_mcp_loading.py` 仅抽样覆盖 5 个关键 slug，非全部 97 个
 
 ## 未来扩展方向
 

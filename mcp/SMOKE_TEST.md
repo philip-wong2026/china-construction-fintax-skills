@@ -30,7 +30,7 @@ python3 -m pip show -f ccfts-mcp
 ### 1. `list_skills`
 
 **验证内容**：
-- 返回所有 96 个技能的基本信息（slug/description/jurisdiction/category/entity_levels）
+- 返回所有 97 个技能的基本信息（slug/description/jurisdiction/category/entity_levels）
 - 可按 `jurisdiction` 过滤（CN / GLOBAL）
 - 可按 `category` 过滤（financial-reporting / accounting / tax 等）
 - 返回字段必须包含 `entity_levels`（非废弃的 `entity_types`）
@@ -106,8 +106,8 @@ python3 scripts/validate-skills.py
 
 **当前自测结果**：
 - `test_mcp_loading.py`：5/5 slugs passed
-- `test_skill_integrity.py`：96 files, 0 errors
-- `validate-skills.py`：96 files, 0 issues
+- `test_skill_integrity.py`：97 files, 0 errors
+- `validate-skills.py`：97 files, 0 issues
 
 ## 已知限制
 
